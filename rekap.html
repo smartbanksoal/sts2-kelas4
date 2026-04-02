@@ -11,6 +11,7 @@
             max-width: 800px;
             margin: auto;
             color: #333;
+            line-height: 1.6;
         }
         table {
             width: 100%;
@@ -19,7 +20,7 @@
         }
         th, td {
             border: 1px solid #ddd;
-            padding: 10px;
+            padding: 12px 10px;
             text-align: left;
         }
         th {
@@ -27,13 +28,13 @@
             color: white;
         }
         tr:nth-child(even) {
-            background-color: #f2f2f2;
+            background-color: #f9f9f9;
         }
         .btn-group {
             margin-top: 20px;
             display: flex;
             gap: 10px;
-            flex-wrap: wrap; /* Agar tombol rapi jika di layar HP kecil */
+            flex-wrap: wrap;
         }
         button {
             padding: 10px 15px;
@@ -42,55 +43,28 @@
             cursor: pointer;
             border-radius: 5px;
             font-weight: bold;
-            transition: background-color 0.3s ease;
+            transition: opacity 0.2s;
         }
+        button:hover { opacity: 0.8; }
         
-        /* Warna Tombol */
         .btn-home { background-color: #607D8B; } 
-        .btn-home:hover { background-color: #455A64; }
-
         .btn-email { background-color: #009688; } 
-        .btn-email:hover { background-color: #00796B; }
-
         .btn-hapus { background-color: #f44336; }
-        .btn-hapus:hover { background-color: #d32f2f; }
-        
         .btn-pin { background-color: #2196F3; }
-        .btn-pin:hover { background-color: #1976D2; }
+        .btn-cetak { background-color: #ff9800; }
 
-        .btn-cetak { background-color: #ff9800; color: white;} 
-        .btn-cetak:hover { background-color: #e68a00; }
-
-        /* Gaya untuk Catatan Peringatan */
         .catatan-penting {
             margin-top: 25px;
             padding: 15px;
             background-color: #fff3cd;
-            border-left: 5px solid #ffecb5;
+            border-left: 5px solid #ffeeba;
             color: #856404;
             font-size: 0.9em;
-            line-height: 1.5;
         }
 
-        /* PENGATURAN SAAT DICETAK (PRINT) */
         @media print {
-            body {
-                padding: 0;
-            }
-            .btn-group, .catatan-penting {
-                display: none; /* Sembunyikan tombol dan catatan saat kertas dicetak */
-            }
-            table {
-                border: 1px solid #000;
-            }
-            th, td {
-                border: 1px solid #000; 
-            }
-            th {
-                background-color: #ccc !important; 
-                color: #000 !important;
-                -webkit-print-color-adjust: exact;
-            }
+            .btn-group, .catatan-penting { display: none; }
+            th { background-color: #eee !important; color: #000 !important; }
         }
     </style>
 </head>
@@ -110,32 +84,31 @@
             </tr>
         </thead>
         <tbody id="isiTabel">
-            </tbody>
+            <!-- Data akan diisi oleh JavaScript -->
+        </tbody>
     </table>
 
     <div class="btn-group">
-        <button class="btn-home" onclick="window.location.href='index.html'">🏠 Kembali ke Home</button>
-        <button class="btn-email" onclick="kirimKeEmail()">✉️ Kirim ke Email</button>
-        <button class="btn-cetak" onclick="window.print()">🖨️ Cetak Riwayat</button>
-        <button class="btn-pin" onclick="aturPIN()">⚙️ Pengaturan PIN Guru</button>
-        <button class="btn-hapus" onclick="hapusRiwayat()">🗑️ Hapus Riwayat</button>
+        <button class="btn-home" onclick="window.location.href='index.html'">🏠 Home</button>
+        <button class="btn-email" onclick="kirimKeEmail()">✉️ Email</button>
+        <button class="btn-cetak" onclick="window.print()">🖨️ Cetak</button>
+        <button class="btn-pin" onclick="aturPIN()">⚙️ Atur PIN</button>
+        <button class="btn-hapus" onclick="hapusRiwayat()">🗑️ Hapus</button>
     </div>
 
     <div class="catatan-penting">
-        <strong>💡 Catatan:</strong> Jangan melakukan <em>'Hapus Data Situs' (Clear Site Data / Clear Cache & Cookies)</em> pada browser Anda jika tidak ingin riwayat nilai ini hilang. Jangan lupa Cetak/Download atau Kirim ke Email nilai secara berkala.
+        <strong>💡 Catatan:</strong> Jangan hapus Cache/Cookies browser agar riwayat tidak hilang. Simpan data secara berkala.
     </div>
 
     <script>
-        // PIN DARURAT (Bisa Anda ganti jika mau)
-        // Gunakan PIN ini jika Guru / Orang Tua lupa PIN mereka
         const PIN_DARURAT = "999999"; 
 
-        // ==========================================
-        // FITUR MENAMPILKAN DATA KE TABEL
-        // ==========================================
+        // Perbaikan: Gunakan DOMContentLoaded agar lebih stabil
+        document.addEventListener('DOMContentLoaded', tampilkanData);
+
         function tampilkanData() {
-            let dataRekap = JSON.parse(localStorage.getItem('dataKuis')) || [];
-            let tbody = document.getElementById('isiTabel');
+            const dataRekap = JSON.parse(localStorage.getItem('dataKuis')) || [];
+            const tbody = document.getElementById('isiTabel');
             tbody.innerHTML = ''; 
 
             if (dataRekap.length === 0) {
@@ -143,8 +116,10 @@
                 return;
             }
 
+            // Gunakan DocumentFragment untuk performa yang lebih baik jika data banyak
+            let rows = "";
             dataRekap.forEach((data, index) => {
-                let baris = `<tr>
+                rows += `<tr>
                     <td>${index + 1}</td>
                     <td>${data.nama}</td>
                     <td>${data.kelas}</td>
@@ -152,109 +127,61 @@
                     <td><strong>${data.nilai}</strong></td>
                     <td>${data.waktu}</td>
                 </tr>`;
-                tbody.innerHTML += baris;
             });
+            tbody.innerHTML = rows;
         }
 
-        // ==========================================
-        // FITUR KIRIM KE EMAIL
-        // ==========================================
         function kirimKeEmail() {
-            let dataRekap = JSON.parse(localStorage.getItem('dataKuis')) || [];
-            
-            if (dataRekap.length === 0) {
-                alert("Belum ada riwayat nilai untuk dikirim.");
-                return;
-            }
+            const dataRekap = JSON.parse(localStorage.getItem('dataKuis')) || [];
+            if (dataRekap.length === 0) return alert("Data kosong.");
 
-            let emailGuru = prompt("Masukkan alamat email Guru (Kosongkan jika ingin mengetik manual di aplikasi email nanti):");
-            
-            if (emailGuru === null) return; // Batal jika user klik cancel
+            const emailGuru = prompt("Masukkan email penerima:");
+            if (emailGuru === null) return;
 
-            let subject = "Laporan Rekap Nilai Kuis Siswa";
-            let body = "Halo Bapak/Ibu Guru,\n\nBerikut adalah laporan rekap nilai kuis siswa:\n\n";
-
-            dataRekap.forEach((data, index) => {
-                body += `${index + 1}. Nama  : ${data.nama}\n`;
-                body += `   Kelas : ${data.kelas}\n`;
-                body += `   Mapel : ${data.mapel}\n`;
-                body += `   Nilai : ${data.nilai}\n`;
-                body += `   Waktu : ${data.waktu}\n`;
-                body += `--------------------------------------\n`;
+            let bodyText = "Laporan Rekap Nilai:\n\n";
+            dataRekap.forEach((d, i) => {
+                bodyText += `${i+1}. ${d.nama} | ${d.kelas} | ${d.mapel} | Nilai: ${d.nilai}\n`;
             });
 
-            body += "\nTerima kasih.";
-
-            // Buat tautan mailto
-            let mailtoLink = `mailto:${emailGuru}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            window.location.href = mailtoLink;
+            window.location.href = `mailto:${emailGuru}?subject=Rekap Nilai&body=${encodeURIComponent(bodyText)}`;
         }
 
-        // ==========================================
-        // FITUR PENGATURAN PIN (DENGAN PIN DARURAT)
-        // ==========================================
         function aturPIN() {
-            let pinTersimpan = localStorage.getItem('pinGuru');
-
+            const pinTersimpan = localStorage.getItem('pinGuru');
             if (!pinTersimpan) {
-                let pinBaru = prompt("Belum ada PIN yang terdaftar.\n\nMasukkan PIN BARU Anda untuk mengamankan data:");
-                
-                if (pinBaru !== null && pinBaru.trim() !== "") {
+                const pinBaru = prompt("Buat PIN Keamanan Baru:");
+                if (pinBaru) {
                     localStorage.setItem('pinGuru', pinBaru);
-                    alert("Berhasil! PIN Anda telah didaftarkan.");
-                } else if (pinBaru !== null) {
-                    alert("PIN tidak boleh kosong!");
+                    alert("PIN Berhasil disimpan.");
                 }
             } else {
-                let pinLama = prompt("Masukkan PIN LAMA Anda (atau PIN Darurat) untuk mengganti PIN:");
-                
-                if (pinLama === null) return; 
-
-                // CEK: Apakah PIN Lama benar, ATAU yang dimasukkan adalah PIN Darurat?
-                if (pinLama === pinTersimpan || pinLama === PIN_DARURAT) {
-                    let pesan = (pinLama === PIN_DARURAT) ? "PIN Darurat Diterima!" : "PIN Lama Benar!";
-                    let pinBaru = prompt(pesan + "\n\nMasukkan PIN BARU Anda:");
-                    
-                    if (pinBaru !== null && pinBaru.trim() !== "") {
+                const verifikasi = prompt("Masukkan PIN Lama atau PIN Darurat:");
+                if (verifikasi === pinTersimpan || verifikasi === PIN_DARURAT) {
+                    const pinBaru = prompt("Masukkan PIN Baru:");
+                    if (pinBaru) {
                         localStorage.setItem('pinGuru', pinBaru);
-                        alert("Berhasil! PIN Anda telah diperbarui.");
-                    } else if (pinBaru !== null) {
-                        alert("PIN Baru tidak boleh kosong!");
+                        alert("PIN Berhasil diperbarui.");
                     }
-                } else {
-                    alert("PIN LAMA SALAH! Anda tidak bisa mengganti PIN.");
+                } else if (verifikasi !== null) {
+                    alert("PIN Salah!");
                 }
             }
         }
 
-        // ==========================================
-        // FITUR HAPUS RIWAYAT (DENGAN PIN DARURAT)
-        // ==========================================
         function hapusRiwayat() {
-            let pinTersimpan = localStorage.getItem('pinGuru');
+            const pinTersimpan = localStorage.getItem('pinGuru');
+            if (!pinTersimpan) return alert("Atur PIN terlebih dahulu!");
 
-            if (!pinTersimpan) {
-                alert("Anda belum mengatur PIN!\n\nSilakan klik tombol 'Pengaturan PIN Guru' terlebih dahulu untuk membuat PIN.");
-                return;
-            }
-
-            let inputPin = prompt("Minta Guru/Orang Tua untuk memasukkan PIN agar bisa menghapus riwayat:");
-            if (inputPin === null) return; 
-
-            // CEK: Apakah PIN benar, ATAU menggunakan PIN Darurat?
+            const inputPin = prompt("Masukkan PIN untuk menghapus semua data:");
             if (inputPin === pinTersimpan || inputPin === PIN_DARURAT) {
-                if(confirm("Apakah Anda YAKIN ingin menghapus semua riwayat nilai di perangkat ini? Data yang dihapus tidak bisa dikembalikan.")) {
+                if (confirm("Hapus semua riwayat? Tindakan ini permanen.")) {
                     localStorage.removeItem('dataKuis');
-                    tampilkanData(); 
-                    alert("Riwayat nilai berhasil dihapus.");
+                    tampilkanData();
                 }
-            } else {
-                alert("PIN SALAH! Anda tidak diizinkan menghapus riwayat nilai.");
+            } else if (inputPin !== null) {
+                alert("PIN Salah!");
             }
         }
-
-        // Jalankan saat halaman dimuat
-        window.onload = tampilkanData;
     </script>
 </body>
 </html>
