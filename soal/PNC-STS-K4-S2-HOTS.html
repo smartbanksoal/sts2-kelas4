@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBankSoal - Kuis Pancasila</title>
+    <style>
+        :root {
+            --primary: #4a90e2;
+            --secondary: #f39c12;
+            --dark: #1a1a1a;
+            --light: #f5f6fa;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #74b9ff, #a29bfe);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            user-select: none; /* Proteksi copy-paste */
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 600px;
+            padding: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-code {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 5px;
+            font-size: 0.85em;
+            font-weight: bold;
+            letter-spacing: 1px;
+            z-index: 10;
+        }
+
+        h2, h3 {
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            width: 100%;
+            margin-bottom: 10px;
+            transition: 0.3s;
+        }
+
+        .btn:hover { background: #357abd; }
+        .btn-home { 
+            background: var(--secondary); 
+            margin-top: 25px; /* Memberi jarak dari header code */
+            margin-bottom: 15px;
+        }
+        .btn-home:hover { background: #d68910; }
+        
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .nav-buttons .btn { width: 48%; }
+
+        .history-board {
+            margin-top: 20px;
+            background: var(--light);
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 150px;
+            overflow-y: auto;
+            font-size: 0.9em;
+        }
+
+        .history-item {
+            border-bottom: 1px solid #ddd;
+            padding: 5px 0;
+        }
+
+        /* Quiz Layout */
+        #quiz-screen { display: none; }
+        
+        .live-score {
+            text-align: right;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 15px;
+            margin-top: 20px;
+        }
+
+        .question-img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .options {
+            display: grid;
+            gap: 10px;
+        }
+
+        .option-btn {
+            background: var(--light);
+            border: 2px solid #ddd;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1em;
+            transition: 0.2s;
+        }
+
+        .option-btn.correct {
+            background: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+
+        .option-btn.wrong {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+
+        .option-btn:disabled { cursor: not-allowed; }
+
+        .explanation {
+            margin-top: 15px;
+            padding: 15px;
+            background: #d4edda;
+            color: #155724;
+            border-radius: 8px;
+            display: none;
+            font-size: 0.9em;
+            border-left: 5px solid var(--success);
+        }
+
+        footer {
+            background: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.9em;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="login-screen" class="card">
+            <div class="header-code">PNC-STS-K4-S2-HOTS</div>
+            
+            <button class="btn btn-home" onclick="window.location.href='../index.html'">Kembali ke Home</button>
+            
+            <h2 style="margin-top: 0;">Selamat Datang</h2>
+            <div class="input-group">
+                <input type="text" id="student-name" placeholder="Masukkan Nama Lengkap" required>
+            </div>
+            <div class="input-group">
+                <input type="text" id="student-class" placeholder="Masukkan Kelas" required>
+            </div>
+            
+            <button class="btn" onclick="startQuiz()">Mulai Kuis</button>
+
+            <div class="history-board">
+                <h4>Riwayat Skor</h4>
+                <div id="history-list">Belum ada riwayat.</div>
+            </div>
+        </div>
+
+        <div id="quiz-screen" class="card">
+            <div class="header-code">PNC-STS-K4-S2-HOTS</div>
+            <div class="live-score">Skor Sementara: <span id="current-score">0</span></div>
+            
+            <h3 id="question-text" style="text-align: left;">Pertanyaan</h3>
+            <div id="image-container"></div>
+            
+            <div class="options" id="options-container"></div>
+            
+            <div class="explanation" id="explanation-box"></div>
+
+            <div class="nav-buttons">
+                <button class="btn" id="btn-prev" onclick="prevQuestion()">Sebelumnya</button>
+                <button class="btn" id="btn-next" onclick="nextQuestion()">Selanjutnya</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        Dibuat dengan ❤️ untuk generasi cerdas bangsa.<br>
+        Oleh : Dwi Endrasto
+    </footer>
+
+    <script>
+        // --- PROTEKSI KEAMANAN ---
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('copy', event => event.preventDefault());
+        document.addEventListener('cut', event => event.preventDefault());
+        document.addEventListener('paste', event => event.preventDefault());
+
+        // --- DATABASE SOAL ---
+        const soalMaster = [
+            {
+                text: "Perhatikan gambar di bawah ini dengan saksama. Anak-anak tersebut sedang bermain apa?",
+                image: { src: "gambar/permainan_tradisional.jpg", alt: "Gambar anak-anak bermain gobak sodor" },
+                options: [
+                    { text: "Gobak sodor", isCorrect: true },
+                    { text: "Petak umpet", isCorrect: false },
+                    { text: "Lompat tali", isCorrect: false },
+                    { text: "Balap karung", isCorrect: false }
+                ],
+                explanation: "Gambar tersebut menunjukkan permainan gobak sodor yang melatih kerja sama tim dan kekompakan."
+            },
+            {
+                text: "Manusia disebut sebagai makhluk sosial karena dalam menjalani kehidupannya selalu memiliki sifat yaitu...",
+                options: [
+                    { text: "Butuh bantuan orang", isCorrect: true },
+                    { text: "Bisa hidup sendiri", isCorrect: false },
+                    { text: "Suka menyendiri terus", isCorrect: false },
+                    { text: "Tidak butuh teman", isCorrect: false }
+                ],
+                explanation: "Makhluk sosial berarti manusia tidak bisa hidup sendiri dan selalu membutuhkan bantuan orang lain."
+            },
+            {
+                text: "Indonesia memiliki budaya yang sangat beragam. Salah satu faktor utama penyebabnya adalah...",
+                options: [
+                    { text: "Kondisi alam beda", isCorrect: true },
+                    { text: "Semua wilayah sama", isCorrect: false },
+                    { text: "Hanya satu pulau", isCorrect: false },
+                    { text: "Penduduk sangat sedikit", isCorrect: false }
+                ],
+                explanation: "Perbedaan kondisi alam (pegunungan, pesisir, dll) menyebabkan masyarakat memiliki cara hidup dan budaya yang berbeda."
+            },
+            {
+                text: "Perhatikan ilustrasi makanan pada gambar. Makanan lezat ini berasal dari daerah mana?",
+                image: { src: "gambar/makanan_rendang.jpg", alt: "Gambar makanan rendang daging" },
+                options: [
+                    { text: "Rendang dari Padang", isCorrect: true },
+                    { text: "Gudeg dari Jogja", isCorrect: false },
+                    { text: "Pempek dari Sumsel", isCorrect: false },
+                    { text: "Papeda dari Papua", isCorrect: false }
+                ],
+                explanation: "Rendang adalah makanan khas berbahan dasar daging dari Padang, Sumatra Barat."
+            },
+            {
+                text: "Makna luhur yang terkandung dalam semboyan negara kita Bhinneka Tunggal Ika adalah...",
+                options: [
+                    { text: "Beda tapi tetap satu", isCorrect: true },
+                    { text: "Sama dan bersatu padu", isCorrect: false },
+                    { text: "Beragam namun mudah pecah", isCorrect: false },
+                    { text: "Satu untuk semua orang", isCorrect: false }
+                ],
+                explanation: "Meskipun bangsa Indonesia berbeda-beda suku, agama, dan budaya, namun tetap satu kesatuan."
+            },
+            {
+                text: "Bahasa Indonesia ditetapkan secara resmi sebagai bahasa persatuan bangsa pada peristiwa bersejarah yaitu...",
+                options: [
+                    { text: "Sumpah Pemuda lahir", isCorrect: true },
+                    { text: "Proklamasi bangsa kita", isCorrect: false },
+                    { text: "Hari pahlawan nasional", isCorrect: false },
+                    { text: "Hari lahir pancasila", isCorrect: false }
+                ],
+                explanation: "Sumpah Pemuda (28 Oktober 1928) menetapkan bahasa Indonesia sebagai bahasa persatuan."
+            },
+            {
+                text: "Warga desa sedang memperbaiki jembatan yang rusak bersama-sama. Manfaat utama kegiatan tersebut adalah...",
+                options: [
+                    { text: "Pekerjaan cepat selesai", isCorrect: true },
+                    { text: "Menambah beban warga", isCorrect: false },
+                    { text: "Membuat warga malas", isCorrect: false },
+                    { text: "Menghabiskan banyak waktu", isCorrect: false }
+                ],
+                explanation: "Gotong royong membuat pekerjaan yang berat terasa ringan dan cepat selesai."
+            },
+            {
+                text: "Setiap daerah memiliki istilah gotong royong yang khas. Tradisi gotong royong di Bali disebut...",
+                options: [
+                    { text: "Ngayah Bali", isCorrect: true },
+                    { text: "Mapalus Minahasa", isCorrect: false },
+                    { text: "Gugur Gunung", isCorrect: false },
+                    { text: "Sambat Sinambat", isCorrect: false }
+                ],
+                explanation: "Ngayah adalah tradisi gotong royong masyarakat Bali yang dilakukan dengan ikhlas."
+            },
+            {
+                text: "Saat teman dari daerah lain menampilkan keseniannya, sikap yang paling tepat kita tunjukkan adalah...",
+                options: [
+                    { text: "Menonton pertunjukan tari daerah", isCorrect: true },
+                    { text: "Mengejek tarian daerah lain", isCorrect: false },
+                    { text: "Hanya menyukai budaya sendiri", isCorrect: false },
+                    { text: "Menolak belajar budaya lain", isCorrect: false }
+                ],
+                explanation: "Menonton dan mengapresiasi pertunjukan adalah wujud nyata menghormati budaya daerah lain."
+            },
+            {
+                text: "Saat bertemu teman dari suku berbeda, kita memakai Bahasa Indonesia karena fungsinya sebagai...",
+                options: [
+                    { text: "Alat pemersatu bangsa", isCorrect: true },
+                    { text: "Bahasa daerah saja", isCorrect: false },
+                    { text: "Bahasa luar negeri", isCorrect: false },
+                    { text: "Alat pemecah belah", isCorrect: false }
+                ],
+                explanation: "Bahasa Indonesia menjembatani komunikasi antar suku sehingga berfungsi sebagai pemersatu bangsa."
+            },
+            {
+                text: "Perhatikan properti piring yang dipegang oleh penari pada gambar. Nama tarian ini adalah...",
+                image: { src: "gambar/tari_piring.jpg", alt: "Gambar penari membawakan tari piring" },
+                options: [
+                    { text: "Tari Piring Minang", isCorrect: true },
+                    { text: "Tari Kecak Bali", isCorrect: false },
+                    { text: "Tari Saman Aceh", isCorrect: false },
+                    { text: "Tari Jaipong Sunda", isCorrect: false }
+                ],
+                explanation: "Tari Piring adalah tarian tradisional yang berasal dari Minangkabau, Sumatra Barat."
+            },
+            {
+                text: "Di lingkungan sekolah terdapat banyak perbedaan latar belakang siswa. Sikap yang harus diutamakan adalah...",
+                options: [
+                    { text: "Saling menghargai satu sama", isCorrect: true },
+                    { text: "Suka mengejek teman beda", isCorrect: false },
+                    { text: "Hanya berteman suku sama", isCorrect: false },
+                    { text: "Tidak peduli budaya orang", isCorrect: false }
+                ],
+                explanation: "Keberagaman harus disikapi dengan rasa saling menghargai agar tercipta kerukunan."
+            },
+            {
+                text: "Perhatikan gambar aktivitas gotong royong berikut. Kegiatan ini biasanya dilakukan oleh siswa untuk...",
+                image: { src: "gambar/piket_kelas.jpg", alt: "Gambar siswa piket membersihkan kelas" },
+                options: [
+                    { text: "Membersihkan ruang kelas", isCorrect: true },
+                    { text: "Membersihkan selokan desa", isCorrect: false },
+                    { text: "Membangun pos kamling", isCorrect: false },
+                    { text: "Memperbaiki jalan raya", isCorrect: false }
+                ],
+                explanation: "Piket kelas adalah contoh nyata gotong royong yang dilakukan di lingkungan sekolah."
+            },
+            {
+                text: "Salah satu poin penting dalam ikrar Sumpah Pemuda menegaskan bahwa bangsa Indonesia mengaku bertumpah darah...",
+                options: [
+                    { text: "Satu nusa satu bangsa", isCorrect: true },
+                    { text: "Satu pulau satu negara", isCorrect: false },
+                    { text: "Banyak suku satu bahasa", isCorrect: false },
+                    { text: "Satu negara banyak bahasa", isCorrect: false }
+                ],
+                explanation: "Ikrar Sumpah Pemuda menyatukan nusa, bangsa, dan bahasa menjadi satu kesatuan yang utuh."
+            },
+            {
+                text: "Contoh nyata bentuk penerapan budaya gotong royong yang sering terlihat di lingkungan masyarakat adalah...",
+                options: [
+                    { text: "Kerja bakti membersihkan desa", isCorrect: true },
+                    { text: "Piket menyapu ruang kelas", isCorrect: false },
+                    { text: "Mengerjakan ujian secara bersama", isCorrect: false },
+                    { text: "Membantu ibu memasak nasi", isCorrect: false }
+                ],
+                explanation: "Kerja bakti desa melibatkan seluruh warga sehingga mencerminkan gotong royong masyarakat."
+            },
+            {
+                text: "Dalam melaksanakan kegiatan gotong royong, nilai luhur Pancasila yang paling menonjol diajarkan adalah sikap...",
+                options: [
+                    { text: "Rela berkorban bersama", isCorrect: true },
+                    { text: "Sifat egois tinggi", isCorrect: false },
+                    { text: "Mau menang sendiri", isCorrect: false },
+                    { text: "Suka pamer harta", isCorrect: false }
+                ],
+                explanation: "Gotong royong mengajarkan kita untuk rela mengorbankan waktu dan tenaga demi kepentingan bersama."
+            },
+            {
+                text: "Jika bangsa Indonesia tidak memiliki bahasa persatuan, maka komunikasi antar suku di nusantara akan...",
+                options: [
+                    { text: "Sulit saat bicara", isCorrect: true },
+                    { text: "Mudah saat komunikasi", isCorrect: false },
+                    { text: "Sangat lancar sekali", isCorrect: false },
+                    { text: "Lebih cepat paham", isCorrect: false }
+                ],
+                explanation: "Tanpa bahasa persatuan, masyarakat dengan bahasa daerah berbeda akan sangat sulit berkomunikasi."
+            },
+            {
+                text: "Berdasarkan gambar, permainan tradisional berkelompok ini sangat mengandalkan kekuatan dan kekompakan tim yang disebut...",
+                image: { src: "gambar/tarik_tambang.jpg", alt: "Gambar lomba tarik tambang" },
+                options: [
+                    { text: "Tarik tambang seru", isCorrect: true },
+                    { text: "Main game online", isCorrect: false },
+                    { text: "Menonton televisi saja", isCorrect: false },
+                    { text: "Tidur siang lelap", isCorrect: false }
+                ],
+                explanation: "Tarik tambang melatih persatuan, kekuatan otot, dan kekompakan gerak antar anggota regu."
+            },
+            {
+                text: "Sebagai seorang pelajar yang cinta tanah air, wujud menghargai kebudayaan daerah dapat dilakukan dengan...",
+                options: [
+                    { text: "Belajar tari daerah lain", isCorrect: true },
+                    { text: "Hanya diam di rumah", isCorrect: false },
+                    { text: "Mengejek pakaian adat teman", isCorrect: false },
+                    { text: "Menolak memakai batik nasional", isCorrect: false }
+                ],
+                explanation: "Mempelajari tarian dari daerah lain menunjukkan rasa hormat dan pelestarian budaya."
+            },
+            {
+                text: "Rumah adat yang memiliki atap melengkung menyerupai tanduk kerbau adalah kebanggaan masyarakat Minangkabau yaitu...",
+                options: [
+                    { text: "Rumah Gadang Padang", isCorrect: true },
+                    { text: "Rumah Joglo Jawa", isCorrect: false },
+                    { text: "Rumah Honai Papua", isCorrect: false },
+                    { text: "Rumah Tongkonan Toraja", isCorrect: false }
+                ],
+                explanation: "Rumah Gadang adalah rumah adat khas Minangkabau, Sumatra Barat dengan ciri atap bagonjong."
+            },
+            {
+                text: "Latar belakang lahirnya bahasa persatuan didorong oleh kesadaran para tokoh kemerdekaan masa lalu saat...",
+                options: [
+                    { text: "Pemuda bersatu ucap ikrar", isCorrect: true },
+                    { text: "Pemuda saling bertengkar hebat", isCorrect: false },
+                    { text: "Pemuda menolak bahasa persatuan", isCorrect: false },
+                    { text: "Pemuda hanya diam saja", isCorrect: false }
+                ],
+                explanation: "Sumpah Pemuda lahir dari ikrar persatuan para pemuda dari seluruh penjuru Nusantara."
+            },
+            {
+                text: "Agar tim bisa menang dalam permainan gobak sodor, sikap yang wajib diterapkan para pemain adalah...",
+                options: [
+                    { text: "Kerja sama tim", isCorrect: true },
+                    { text: "Main sendiri saja", isCorrect: false },
+                    { text: "Marah pada teman", isCorrect: false },
+                    { text: "Curang saat main", isCorrect: false }
+                ],
+                explanation: "Kerja sama sangat krusial dalam gobak sodor untuk menyerang dan bertahan menjaga garis."
+            },
+            {
+                text: "Di tengah masyarakat yang heterogen, persatuan dan kesatuan nasional dapat terus dijaga kuat apabila kita...",
+                options: [
+                    { text: "Rukun dengan semua teman", isCorrect: true },
+                    { text: "Memilih teman yang kaya", isCorrect: false },
+                    { text: "Suka mencari masalah baru", isCorrect: false },
+                    { text: "Mengejek teman yang beda", isCorrect: false }
+                ],
+                explanation: "Hidup rukun dan berteman tanpa membeda-bedakan adalah kunci utama menjaga persatuan."
+            },
+            {
+                text: "Selain di Bali, daerah Minahasa, Sulawesi Utara juga memiliki tradisi kegiatan gotong royong yang dinamakan...",
+                options: [
+                    { text: "Mapalus Minahasa", isCorrect: true },
+                    { text: "Sambatan Jawa", isCorrect: false },
+                    { text: "Ngayah Bali", isCorrect: false },
+                    { text: "Alang Tulungan", isCorrect: false }
+                ],
+                explanation: "Mapalus adalah sebutan untuk budaya gotong royong dan tolong-menolong suku Minahasa."
+            },
+            {
+                text: "Dalam kehidupan sehari-hari, kita wajib merasa bangga menggunakan identitas bangsa kita sendiri, terutama saat berbahasa yaitu...",
+                options: [
+                    { text: "Bahasa Indonesia bahasa kita", isCorrect: true },
+                    { text: "Bahasa Inggris bahasa kita", isCorrect: false },
+                    { text: "Bahasa daerah bahasa kita", isCorrect: false },
+                    { text: "Bahasa asing bahasa kita", isCorrect: false }
+                ],
+                explanation: "Menggunakan Bahasa Indonesia yang baik dan benar adalah wujud rasa bangga berbangsa."
+            }
+        ];
+
+        let questions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let answeredQuestions = [];
+        let studentData = {};
+        
+        const KEY_HISTORY = "SmartBankSoal_PNC-STS-K4-S2-HOTS_history";
+
+        // Acak Array
+        function shuffleArray(array) {
+            let curId = array.length;
+            while (0 !== curId) {
+                let randId = Math.floor(Math.random() * curId);
+                curId -= 1;
+                let tmp = array[curId];
+                array[curId] = array[randId];
+                array[randId] = tmp;
+            }
+            return array;
+        }
+
+        window.onload = function() {
+            renderHistory();
+        }
+
+        function startQuiz() {
+            const name = document.getElementById('student-name').value;
+            const kelas = document.getElementById('student-class').value;
+            
+            if(!name || !kelas) {
+                alert("Silakan isi nama dan kelas terlebih dahulu!");
+                return;
+            }
+
+            studentData = { name, kelas, time: new Date().toLocaleString() };
+            
+            questions = JSON.parse(JSON.stringify(soalMaster)); 
+            shuffleArray(questions);
+            questions.forEach(q => shuffleArray(q.options));
+
+            currentQuestionIndex = 0;
+            score = 0;
+            answeredQuestions = new Array(questions.length).fill(false);
+            
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('quiz-screen').style.display = 'block';
+            
+            updateScoreDisplay();
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = questions[currentQuestionIndex];
+            document.getElementById('question-text').innerText = `${currentQuestionIndex + 1}. ${q.text}`;
+            
+            const imgContainer = document.getElementById('image-container');
+            imgContainer.innerHTML = '';
+            if(q.image) {
+                const img = document.createElement('img');
+                img.src = q.image.src;
+                img.alt = q.image.alt;
+                img.className = 'question-img';
+                imgContainer.appendChild(img);
+            }
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            q.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt.text;
+                
+                if(answeredQuestions[currentQuestionIndex]) {
+                    btn.disabled = true;
+                    if(opt.isCorrect) btn.classList.add('correct');
+                    else if(btn.innerText === answeredQuestions[currentQuestionIndex].userAnswer) {
+                        btn.classList.add('wrong');
+                    }
+                } else {
+                    btn.onclick = () => selectOption(opt, btn);
+                }
+                optionsContainer.appendChild(btn);
+            });
+
+            const expBox = document.getElementById('explanation-box');
+            if(answeredQuestions[currentQuestionIndex]) {
+                expBox.innerHTML = `<strong>Pembahasan:</strong><br>${q.explanation}`;
+                expBox.style.display = 'block';
+            } else {
+                expBox.style.display = 'none';
+            }
+
+            document.getElementById('btn-prev').style.display = currentQuestionIndex > 0 ? 'block' : 'none';
+            document.getElementById('btn-next').innerText = currentQuestionIndex === questions.length - 1 ? 'Selesai Kuis' : 'Selanjutnya';
+        }
+
+        function selectOption(opt, btnElement) {
+            if(answeredQuestions[currentQuestionIndex]) return; 
+
+            const optionsBtns = document.querySelectorAll('.option-btn');
+            optionsBtns.forEach(btn => btn.disabled = true); 
+
+            if(opt.isCorrect) {
+                btnElement.classList.add('correct');
+                score++;
+            } else {
+                btnElement.classList.add('wrong');
+                optionsBtns.forEach(btn => {
+                    if(questions[currentQuestionIndex].options.find(o => o.text === btn.innerText && o.isCorrect)) {
+                        btn.classList.add('correct');
+                    }
+                });
+            }
+
+            answeredQuestions[currentQuestionIndex] = { userAnswer: opt.text };
+            updateScoreDisplay();
+
+            const expBox = document.getElementById('explanation-box');
+            expBox.innerHTML = `<strong>Pembahasan:</strong><br>${questions[currentQuestionIndex].explanation}`;
+            expBox.style.display = 'block';
+        }
+
+        function updateScoreDisplay() {
+            let displayScore = Math.round((score / questions.length) * 100);
+            if(displayScore > 100) displayScore = 100; 
+            document.getElementById('current-score').innerText = displayScore;
+        }
+
+        function nextQuestion() {
+            if(!answeredQuestions[currentQuestionIndex]) {
+                alert("Silakan pilih jawaban terlebih dahulu!");
+                return;
+            }
+
+            if(currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                showQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function prevQuestion() {
+            if(currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                showQuestion();
+            }
+        }
+
+        function finishQuiz() {
+            let finalScore = Math.round((score / questions.length) * 100);
+            studentData.score = finalScore;
+            
+            let history = JSON.parse(localStorage.getItem(KEY_HISTORY)) || [];
+            history.unshift(studentData);
+            localStorage.setItem(KEY_HISTORY, JSON.stringify(history));
+
+            let rekapData = JSON.parse(localStorage.getItem('SmartBankSoal_Rekap')) || [];
+            rekapData.push({ ...studentData, kode: "PNC-STS-K4-S2-HOTS" });
+            localStorage.setItem('SmartBankSoal_Rekap', JSON.stringify(rekapData));
+
+            alert(`Kuis Selesai!\nNama: ${studentData.name}\nSkor Akhir: ${finalScore}`);
+            
+            document.getElementById('quiz-screen').style.display = 'none';
+            document.getElementById('login-screen').style.display = 'block';
+            document.getElementById('student-name').value = '';
+            document.getElementById('student-class').value = '';
+            renderHistory();
+        }
+
+        function renderHistory() {
+            let history = JSON.parse(localStorage.getItem(KEY_HISTORY)) || [];
+            const list = document.getElementById('history-list');
+            if(history.length === 0) {
+                list.innerHTML = 'Belum ada riwayat.';
+                return;
+            }
+            
+            list.innerHTML = '';
+            history.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.innerHTML = `<strong>${item.name}</strong> (${item.kelas}) - Skor: <strong>${item.score}</strong> <br> <small>${item.time}</small>`;
+                list.appendChild(div);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBankSoal - Kuis PJOK Kelas 4 STS</title>
+    <style>
+        /* Desain Umum & Keamanan Anti Copy-Paste */
+        :root {
+            --primary: #ff6b6b;
+            --secondary: #4ecdc4;
+            --dark-elegant: #1a1a2e;
+            --text-light: #f7fff7;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            margin: 0;
+            padding: 0;
+            color: #333;
+            user-select: none; /* Proteksi copy paste */
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header & Footer */
+        header {
+            background-color: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        footer {
+            background-color: var(--dark-elegant);
+            color: var(--text-light);
+            text-align: center;
+            padding: 15px;
+            margin-top: auto;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        /* Container Utama */
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            flex: 1;
+        }
+
+        /* Tampilan Layar */
+        .screen {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        .screen.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Form Login & Input */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        /* Tombol Ramping Elegan Gelap */
+        .btn {
+            background-color: var(--dark-elegant);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px; /* Ramping */
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-align: center;
+            text-decoration: none;
+            margin: 5px;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(26, 26, 46, 0.4);
+        }
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Tombol Pilihan Jawaban */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .option-btn {
+            background-color: #f8f9fa;
+            border: 2px solid #ddd;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.2s;
+            text-align: left;
+        }
+        .option-btn:hover {
+            border-color: var(--secondary);
+            background-color: #e6fcfb;
+        }
+        .option-btn.correct {
+            background-color: var(--success);
+            color: white;
+            border-color: var(--success);
+        }
+        .option-btn.wrong {
+            background-color: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+
+        /* Skor & Riwayat */
+        .score-display {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 15px;
+            text-align: right;
+        }
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .history-table th, .history-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        .history-table th {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        /* Gambar & Pembahasan */
+        .question-img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin: 15px 0;
+            display: none;
+        }
+        .pembahasan {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff3cd;
+            border-left: 5px solid #ffc107;
+            border-radius: 5px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;"> <header id="app-header">
+        Kode Soal: PJOK-STS-K4-S2-HOTS
+    </header>
+
+    <div class="container">
+        <div id="login-screen" class="screen active">
+            <h2 style="text-align: center; color: var(--dark-elegant);">Selamat Datang di Kuis PJOK!</h2>
+            
+            <div style="text-align: center; margin-bottom: 20px;">
+                <a href="../index.html" class="btn">Kembali ke Home</a>
+            </div>
+
+            <div class="form-group">
+                <label for="namaLengkap">Nama Lengkap:</label>
+                <input type="text" id="namaLengkap" placeholder="Masukkan nama lengkap Anda" required>
+            </div>
+            <div class="form-group">
+                <label for="kelas">Kelas:</label>
+                <input type="text" id="kelas" placeholder="Masukkan kelas Anda" required>
+            </div>
+            
+            <button class="btn" onclick="mulaiKuis()" style="width: 100%; margin-top: 10px; font-size: 1.1rem;">Mulai Kuis</button>
+
+            <h3 style="margin-top: 30px; border-bottom: 2px solid var(--secondary); padding-bottom: 5px;">Riwayat Skor Tertinggi</h3>
+            <table class="history-table" id="history-table">
+                <thead>
+                    <tr>
+                        <th>Nama</th>
+                        <th>Kelas</th>
+                        <th>Skor</th>
+                        <th>Waktu</th>
+                    </tr>
+                </thead>
+                <tbody id="history-body">
+                    </tbody>
+            </table>
+        </div>
+
+        <div id="quiz-screen" class="screen">
+            <div class="score-display">Skor Sementara: <span id="current-score">0</span></div>
+            
+            <h3 id="question-number">Soal 1 / 25</h3>
+            <p id="question-text" style="font-size: 1.1rem; font-weight: bold;"></p>
+            
+            <img id="question-image" class="question-img" src="" alt="Gambar Soal">
+
+            <div class="options-grid" id="options-container">
+                </div>
+
+            <div class="pembahasan" id="pembahasan-container"></div>
+
+            <div class="nav-buttons">
+                <button class="btn" id="btn-prev" onclick="gantiSoal(-1)" disabled>Soal Sebelumnya</button>
+                <button class="btn" id="btn-next" onclick="gantiSoal(1)" disabled>Soal Selanjutnya</button>
+            </div>
+        </div>
+
+        <div id="result-screen" class="screen" style="text-align: center;">
+            <h2>Kuis Selesai!</h2>
+            <p style="font-size: 1.2rem;">Nama: <span id="res-nama" style="font-weight: bold;"></span></p>
+            <p style="font-size: 1.2rem;">Kelas: <span id="res-kelas" style="font-weight: bold;"></span></p>
+            <div style="font-size: 3rem; font-weight: bold; color: var(--success); margin: 20px 0;">
+                Skor: <span id="final-score">0</span>
+            </div>
+            <button class="btn" onclick="kembaliKeLogin()">Selesai & Simpan</button>
+        </div>
+    </div>
+
+    <footer>
+       Dibuat dengan ❤️ untuk generasi cerdas bangsa.<br>
+        Oleh : Dwi Endrasto
+    </footer>
+
+    <script>
+        // Data Soal berdasarkan Kisi-kisi PJOK Kelas 4 STS (Semua pilihan 5 kata)
+        const bankSoal = [
+            // Soal 1-5 (Gerak Berirama L1-L3)
+            {
+                q: "Pengertian senam irama yang tepat adalah ...", img: "",
+                o: [
+                    { t: "Gerak tubuh sesuai alunan musik.", c: true },
+                    { t: "Lari cepat menuju garis akhir.", c: false },
+                    { t: "Lompat tinggi lewati tiang batas.", c: false },
+                    { t: "Tolak peluru sejauh mungkin saja.", c: false }
+                ], p: "Senam irama adalah senam yang gerakannya dilakukan dengan mengikuti irama nada/musik."
+            },
+            {
+                q: "Perhatikan gambar! Gerakan tersebut dinamakan ...", img: "gambar/img_langkah_kaki.jpg",
+                o: [
+                    { t: "Melangkah maju ke arah depan.", c: true },
+                    { t: "Melompat tinggi ke arah atas.", c: false },
+                    { t: "Berlari cepat ke arah samping.", c: false },
+                    { t: "Memutar badan ke arah luar.", c: false }
+                ], p: "Gambar menunjukkan aktivitas gerak melangkah maju yang merupakan dasar senam irama."
+            },
+            {
+                q: "Cara melakukan ayunan satu lengan yaitu ...", img: "",
+                o: [
+                    { t: "Lengan diayun lurus ke depan.", c: true },
+                    { t: "Lengan ditekuk diam di dada.", c: false },
+                    { t: "Lengan diputar cepat ke belakang.", c: false },
+                    { t: "Lengan ditarik kuat ke bawah.", c: false }
+                ], p: "Ayunan satu lengan pada senam irama dilakukan dengan mengayun lengan lurus serirama."
+            },
+            {
+                q: "Musik pada senam irama bertujuan ...", img: "",
+                o: [
+                    { t: "Memberi acuan hitungan tempo gerak.", c: true },
+                    { t: "Membuat suasana menjadi sangat bising.", c: false },
+                    { t: "Mengganggu fokus saat sedang senam.", c: false },
+                    { t: "Mengurangi semangat peserta senam irama.", c: false }
+                ], p: "Fungsi utama musik adalah untuk mengatur tempo dan kekompakan gerakan."
+            },
+            {
+                q: "Tahap awal belajar renang adalah ...", img: "",
+                o: [
+                    { t: "Latihan napas di dalam air.", c: true },
+                    { t: "Loncat indah dari atas papan.", c: false },
+                    { t: "Gaya bebas melintasi kolam renang.", c: false },
+                    { t: "Gaya punggung sambil tutup mata.", c: false }
+                ], p: "Latihan pernapasan sangat penting sebagai dasar sebelum berlatih gaya renang apapun."
+            },
+            
+            // Soal 6-10 (Pengenalan Air L1-L2)
+            {
+                q: "Perhatikan gambar! Anak tersebut sedang melakukan ...", img: "gambar/img_meluncur_air.jpg",
+                o: [
+                    { t: "Gerak meluncur lurus ke depan.", c: true },
+                    { t: "Gerak menyelam cari koin emas.", c: false },
+                    { t: "Gerak melompat dari tepi kolam.", c: false },
+                    { t: "Gerak mengapung gaya punggung diam.", c: false }
+                ], p: "Meluncur dilakukan dengan mendorong kaki ke dinding kolam agar badan meluncur lurus."
+            },
+            {
+                q: "Tujuan utama latihan mengapung adalah ...", img: "",
+                o: [
+                    { t: "Melatih tubuh agar tidak tenggelam.", c: true },
+                    { t: "Membuat tubuh cepat merasa lelah.", c: false },
+                    { t: "Menahan napas selama mungkin saja.", c: false },
+                    { t: "Membuka mata lebar dalam air.", c: false }
+                ], p: "Mengapung sangat krusial agar peserta didik tidak tenggelam di kedalaman air."
+            },
+            {
+                q: "Manfaat utama aktivitas pengenalan air adalah ...", img: "",
+                o: [
+                    { t: "Menghilangkan rasa takut pada air.", c: true },
+                    { t: "Membuat tubuh menjadi sangat dingin.", c: false },
+                    { t: "Mencegah kita belajar berenang cepat.", c: false },
+                    { t: "Mengurangi tinggi badan secara drastis.", c: false }
+                ], p: "Pengenalan air bertujuan menumbuhkan keberanian anak saat berada di kolam."
+            },
+            {
+                q: "Pola langkah zig-zag senam bertujuan ...", img: "",
+                o: [
+                    { t: "Melatih kelincahan gerak kaki kita.", c: true },
+                    { t: "Membuat kaki menjadi kram otot.", c: false },
+                    { t: "Memperlambat gerakan saat sedang senam.", c: false },
+                    { t: "Mengurangi keseimbangan tubuh secara cepat.", c: false }
+                ], p: "Gerakan zig-zag menuntut kelincahan dan perpindahan tumpuan kaki yang cepat."
+            },
+            {
+                q: "Ayunan lengan silang depan melatih ...", img: "",
+                o: [
+                    { t: "Kelenturan otot bahu dan dada.", c: true },
+                    { t: "Kekuatan otot betis dan paha.", c: false },
+                    { t: "Kelincahan kaki melompat ke atas.", c: false },
+                    { t: "Daya tahan paru dan jantung.", c: false }
+                ], p: "Ayunan lengan ke depan dada melatih area otot dada dan kelenturan persendian bahu."
+            },
+
+            // Soal 11-15 
+            {
+                q: "Manfaat pola gerak kombinasi adalah ...", img: "",
+                o: [
+                    { t: "Meningkatkan kerja saraf motorik tubuh.", c: true },
+                    { t: "Menurunkan daya ingat anak anak.", c: false },
+                    { t: "Membuat badan cepat terasa kaku.", c: false },
+                    { t: "Menghambat laju pertumbuhan tulang kita.", c: false }
+                ], p: "Kombinasi gerak merangsang koordinasi antara mata, saraf motorik, dan juga otot."
+            },
+            {
+                q: "Perhatikan gambar! Alat senam ini berfungsi ...", img: "gambar/img_alat_simpai.jpg",
+                o: [
+                    { t: "Menambah keindahan gerakan senam irama.", c: true },
+                    { t: "Menjadi beban berat untuk tangan.", c: false },
+                    { t: "Mengganggu pandangan mata saat senam.", c: false },
+                    { t: "Membuat gerakan kaki menjadi lambat.", c: false }
+                ], p: "Alat senam irama seperti simpai/pita digunakan untuk memperindah visual gerakan senam."
+            },
+            {
+                q: "Kombinasi jalan dan ayun melatih ...", img: "",
+                o: [
+                    { t: "Keserasian antara tangan dan kaki.", c: true },
+                    { t: "Kekuatan murni pada otot perut.", c: false },
+                    { t: "Kecepatan lari sprint jarak pendek.", c: false },
+                    { t: "Daya ledak saat lompat jauh.", c: false }
+                ], p: "Melangkah sambil mengayun lengan menuntut keserasian dan koordinasi dua anggota tubuh."
+            },
+            {
+                q: "Tujuan berjalan di dalam air ...", img: "",
+                o: [
+                    { t: "Membiasakan diri dengan tekanan air.", c: true },
+                    { t: "Mempercepat waktu saat lomba renang.", c: false },
+                    { t: "Membuat kaki kram secara cepat.", c: false },
+                    { t: "Menahan napas hingga batas maksimal.", c: false }
+                ], p: "Berjalan di kolam dangkal membiasakan tubuh anak terhadap massa dan daya apung air."
+            },
+            {
+                q: "Bermain lempar bola di air ...", img: "",
+                o: [
+                    { t: "Membuat kita gembira saat berenang.", c: true },
+                    { t: "Menambah rasa takut pada air.", c: false },
+                    { t: "Memperburuk kerja sama antar teman.", c: false },
+                    { t: "Mencegah kita belajar gaya bebas.", c: false }
+                ], p: "Permainan air bertujuan menciptakan suasana menyenangkan agar peserta didik rileks."
+            },
+
+            // Soal 16-20
+            {
+                q: "Aktivitas di air sangat baik ...", img: "",
+                o: [
+                    { t: "Menjaga kesehatan jantung dan paru.", c: true },
+                    { t: "Membuat mata menjadi merah perih.", c: false },
+                    { t: "Mencegah tubuh tumbuh menjadi tinggi.", c: false },
+                    { t: "Mengurangi nafsu makan secara drastis.", c: false }
+                ], p: "Renang atau main air melatih sistem kardiovaskular tubuh secara menyeluruh."
+            },
+            {
+                q: "Perhatikan gambar! Permainan air ini melatih ...", img: "gambar/img_main_jaringikan.jpg",
+                o: [
+                    { t: "Kekompakan berlari di dalam kolam.", c: true },
+                    { t: "Kemampuan menyelam di kolam dalam.", c: false },
+                    { t: "Kelenturan tubuh saat senam lantai.", c: false },
+                    { t: "Kecepatan gaya bebas jarak jauh.", c: false }
+                ], p: "Permainan menjaring ikan melatih kekompakan serta kelincahan lari membelah tekanan air."
+            },
+            {
+                q: "Aturan keselamatan kolam renang yaitu ...", img: "",
+                o: [
+                    { t: "Dilarang berlari di tepi kolam.", c: true },
+                    { t: "Boleh makan saat sedang berenang.", c: false },
+                    { t: "Bebas mendorong teman ke air.", c: false },
+                    { t: "Berenang sendiri tanpa diawasi guru.", c: false }
+                ], p: "Lantai tepi kolam sangat licin, sehingga berlari dapat menyebabkan terpeleset berbahaya."
+            },
+            {
+                q: "Langkah biasa pada senam disebut ...", img: "",
+                o: [
+                    { t: "Langkah loppas dalam senam irama.", c: true },
+                    { t: "Langkah mundur dalam senam irama.", c: false },
+                    { t: "Langkah silang dalam senam irama.", c: false },
+                    { t: "Langkah lompat dalam senam irama.", c: false }
+                ], p: "Istilah loppas adalah nama lain dari langkah biasa dalam senam irama."
+            },
+            {
+                q: "Langkah rapat pada senam disebut ...", img: "",
+                o: [
+                    { t: "Langkah bijtrekpas untuk senam irama.", c: true },
+                    { t: "Langkah wallpas untuk senam irama.", c: false },
+                    { t: "Langkah loppas untuk senam irama.", c: false },
+                    { t: "Langkah balanspas untuk senam irama.", c: false }
+                ], p: "Langkah rapat yang berfungsi merapatkan barisan tumpuan dikenal sebagai bijtrekpas."
+            },
+
+            // Soal 21-25
+            {
+                q: "Sikap awal saat langkah biasa ...", img: "",
+                o: [
+                    { t: "Berdiri tegak pandangan ke depan.", c: true },
+                    { t: "Duduk bersila pandangan ke bawah.", c: false },
+                    { t: "Tidur telentang pandangan ke atas.", c: false },
+                    { t: "Membungkuk pandangan arah ke belakang.", c: false }
+                ], p: "Semua gerakan senam irama diawali dengan sikap badan tegak sempurna dan pandangan fokus."
+            },
+            {
+                q: "Bermain kejar-kejaran di air melatih ...", img: "",
+                o: [
+                    { t: "Kelincahan bergerak di dalam air.", c: true },
+                    { t: "Kekuatan otot tangan menarik air.", c: false },
+                    { t: "Kemampuan melompat tinggi ke atas.", c: false },
+                    { t: "Daya tahan menahan napas lama.", c: false }
+                ], p: "Bermain kejar-kejaran membiasakan kelincahan berpindah posisi di tengah hadangan massa air."
+            },
+            {
+                q: "Perhatikan gambar langkah rapat tersebut! ...", img: "gambar/img_langkah_rapat.jpg",
+                o: [
+                    { t: "Kaki selalu mendarat mengeper lentur.", c: true },
+                    { t: "Kaki mendarat kaku tanpa ditekuk.", c: false },
+                    { t: "Kaki diseret kuat ke depan.", c: false },
+                    { t: "Kaki diangkat setinggi batas dada.", c: false }
+                ], p: "Prinsip dasar langkah senam irama adalah lutut yang selalu mengeper untuk menyerap beban."
+            },
+            {
+                q: "Ayunan dua lengan berguna untuk ...", img: "",
+                o: [
+                    { t: "Melenturkan sendi bahu dengan baik.", c: true },
+                    { t: "Mencegah kaki melangkah dengan bebas.", c: false },
+                    { t: "Membuat leher menjadi sangat kaku.", c: false },
+                    { t: "Mempersulit gerakan badan saat senam.", c: false }
+                ], p: "Ayunan lengan secara kontinu merelaksasi dan melenturkan otot dan sendi sekitar bahu."
+            },
+            {
+                q: "Kombinasi jalan dan putar lengan ...", img: "",
+                o: [
+                    { t: "Membutuhkan koordinasi tubuh yang baik.", c: true },
+                    { t: "Sangat mudah dilakukan tanpa latihan.", c: false },
+                    { t: "Hanya butuh kekuatan otot kaki.", c: false },
+                    { t: "Membahayakan sendi tangan dan kaki.", c: false }
+                ], p: "Gerakan kombinasi cukup kompleks sehingga melatih konsentrasi dan koordinasi seluruh tubuh."
+            }
+        ];
+
+        // Unique Data Key untuk mencegah skor bocor antar kuis
+        const STORAGE_KEY = 'smartbanksoal_history_pjok_sts_k4';
+        
+        let state = {
+            nama: '', kelas: '', 
+            questions: [], currentIdx: 0,
+            answersFlag: [], // Sistem Flagging (menandai soal yang sudah dijawab)
+            correctCount: 0
+        };
+
+        // Fungsi Acak Array (Fisher-Yates)
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex !== 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        // Tampilkan Riwayat di Login
+        function tampilkanRiwayat() {
+            const history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            const tbody = document.getElementById('history-body');
+            tbody.innerHTML = '';
+            
+            // Urutkan skor tertinggi
+            history.sort((a, b) => b.skor - a.skor);
+            
+            history.forEach(item => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${item.nama}</td>
+                        <td>${item.kelas}</td>
+                        <td style="font-weight:bold; color:var(--primary);">${item.skor}</td>
+                        <td>${item.waktu}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function mulaiKuis() {
+            const nama = document.getElementById('namaLengkap').value.trim();
+            const kelas = document.getElementById('kelas').value.trim();
+            
+            if(!nama || !kelas) {
+                alert("Harap isi Nama dan Kelas terlebih dahulu!");
+                return;
+            }
+
+            // Total Reset Variabel
+            state.nama = nama;
+            state.kelas = kelas;
+            state.correctCount = 0;
+            state.currentIdx = 0;
+            state.answersFlag = new Array(bankSoal.length).fill(false);
+            
+            // Acak Soal dan Pilihan
+            let acakSoal = bankSoal.map(s => {
+                return {
+                    q: s.q, img: s.img, p: s.p,
+                    o: shuffle([...s.o]) // Posisi pilihan diacak
+                }
+            });
+            state.questions = shuffle(acakSoal);
+
+            document.getElementById('login-screen').classList.remove('active');
+            document.getElementById('quiz-screen').classList.active = true;
+            document.getElementById('quiz-screen').classList.add('active');
+            
+            muatSoal();
+            updateScoreUI();
+        }
+
+        function muatSoal() {
+            const soalDiv = document.getElementById('quiz-screen');
+            const data = state.questions[state.currentIdx];
+            
+            document.getElementById('question-number').innerText = `Soal ${state.currentIdx + 1} / ${state.questions.length}`;
+            document.getElementById('question-text').innerText = data.q;
+            
+            // Handle Gambar
+            const imgEl = document.getElementById('question-image');
+            if(data.img !== "") {
+                imgEl.src = data.img;
+                imgEl.style.display = "block";
+            } else {
+                imgEl.style.display = "none";
+            }
+
+            // Handle Pilihan
+            const optContainer = document.getElementById('options-container');
+            optContainer.innerHTML = '';
+            
+            data.o.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = String.fromCharCode(65 + idx) + ". " + opt.t;
+                
+                // Jika soal ini sudah pernah dijawab (Sistem Flagging)
+                if(state.answersFlag[state.currentIdx]) {
+                    btn.disabled = true;
+                    if(opt.c) btn.classList.add('correct');
+                } else {
+                    btn.onclick = () => cekJawaban(btn, opt.c, optContainer);
+                }
+                
+                optContainer.appendChild(btn);
+            });
+
+            // Handle Pembahasan
+            const pemb = document.getElementById('pembahasan-container');
+            if(state.answersFlag[state.currentIdx]) {
+                pemb.innerText = "Pembahasan: " + data.p;
+                pemb.style.display = 'block';
+            } else {
+                pemb.style.display = 'none';
+            }
+
+            // Navigasi
+            document.getElementById('btn-prev').disabled = state.currentIdx === 0;
+            document.getElementById('btn-next').innerText = state.currentIdx === state.questions.length - 1 ? "Selesai" : "Soal Selanjutnya";
+            document.getElementById('btn-next').disabled = !state.answersFlag[state.currentIdx];
+        }
+
+        function cekJawaban(clickedBtn, isCorrect, container) {
+            // Penggunaan Fungsi Pembatas & Flagging (Mencegah multi-click / bocor skor)
+            if(state.answersFlag[state.currentIdx]) return; 
+            state.answersFlag[state.currentIdx] = true;
+
+            const buttons = container.getElementsByTagName('button');
+            const data = state.questions[state.currentIdx];
+
+            for(let btn of buttons) {
+                btn.disabled = true;
+                // Cari jawaban mana yang sebenarnya benar
+                const textAns = btn.innerText.substring(3); // Hapus "A. "
+                const isThisAnsCorrect = data.o.find(x => x.t === textAns).c;
+                if(isThisAnsCorrect) btn.classList.add('correct');
+            }
+
+            if(isCorrect) {
+                state.correctCount++;
+            } else {
+                clickedBtn.classList.add('wrong');
+            }
+
+            // Tampilkan pembahasan
+            const pemb = document.getElementById('pembahasan-container');
+            pemb.innerText = "Pembahasan: " + data.p;
+            pemb.style.display = 'block';
+
+            updateScoreUI();
+            
+            // Buka akses tombol selanjutnya/selesai
+            document.getElementById('btn-next').disabled = false;
+        }
+
+        function updateScoreUI() {
+            // Perhitungan Berbasis Persentase + Limiter Maksimal 100
+            let hitungSkor = Math.round((state.correctCount / state.questions.length) * 100);
+            let limitSkor = Math.min(100, hitungSkor); 
+            document.getElementById('current-score').innerText = limitSkor;
+            return limitSkor;
+        }
+
+        function gantiSoal(arah) {
+            if(arah === 1 && state.currentIdx === state.questions.length - 1) {
+                akhiriKuis();
+            } else {
+                state.currentIdx += arah;
+                muatSoal();
+            }
+        }
+
+        function akhiriKuis() {
+            document.getElementById('quiz-screen').classList.remove('active');
+            document.getElementById('result-screen').classList.add('active');
+            
+            let skorAkhir = updateScoreUI();
+            
+            document.getElementById('res-nama').innerText = state.nama;
+            document.getElementById('res-kelas').innerText = state.kelas;
+            document.getElementById('final-score').innerText = skorAkhir;
+
+            // Simpan ke Local Storage (Tanpa hapus history)
+            let history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            let now = new Date();
+            let formatWaktu = now.toLocaleDateString('id-ID') + " " + now.toLocaleTimeString('id-ID');
+            
+            history.push({
+                nama: state.nama,
+                kelas: state.kelas,
+                skor: skorAkhir,
+                waktu: formatWaktu
+            });
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+
+            // Komunikasi dengan rekap.html via PostMessage (Sesuai instruksi)
+            try {
+                window.parent.postMessage({
+                    type: 'QUIZ_RESULT',
+                    nama: state.nama,
+                    kelas: state.kelas,
+                    skor: skorAkhir,
+                    kode: 'PJOK-STS-K4-S2-HOTS'
+                }, '*');
+            } catch(e) { console.log('postMessage error', e); }
+        }
+
+        function kembaliKeLogin() {
+            document.getElementById('result-screen').classList.remove('active');
+            document.getElementById('login-screen').classList.add('active');
+            document.getElementById('namaLengkap').value = '';
+            document.getElementById('kelas').value = '';
+            tampilkanRiwayat();
+        }
+
+        // Load awal
+        window.onload = tampilkanRiwayat;
+    </script>
+</body>
+</html>

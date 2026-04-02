@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="jv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Bahasa Jawa - Kelas 4</title>
+    <style>
+        /* CSS & Styling */
+        :root {
+            /* Colorful Theme untuk Login Screen */
+            --bg-color: #f0f8ff;
+            --primary: #4a90e2;
+            --secondary: #f39c12;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --correct: #27ae60;
+            --incorrect: #c0392b;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            user-select: none; /* Anti Copy-Paste */
+        }
+
+        .header {
+            background-color: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            flex: 1;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            width: 90%;
+        }
+
+        /* Login Screen */
+        #login-screen {
+            text-align: center;
+        }
+        
+        .login-title {
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group input {
+            width: 80%;
+            padding: 10px;
+            border: 2px solid var(--primary);
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin: 5px;
+            transition: 0.3s;
+            color: white;
+            font-weight: bold;
+        }
+
+        .btn-start { background-color: var(--correct); }
+        .btn-start:hover { background-color: #219653; }
+        
+        .btn-home { background-color: var(--secondary); text-decoration: none; display: inline-block;}
+        .btn-home:hover { background-color: #d68910; }
+
+        .btn-nav { background-color: var(--primary); }
+        .btn-nav:hover { background-color: #357abd; }
+        .btn-nav:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+
+        .history-section {
+            margin-top: 30px;
+            text-align: left;
+            background: var(--light);
+            padding: 15px;
+            border-radius: 5px;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        
+        .history-section li {
+            background: #fff;
+            margin-bottom: 8px;
+            padding: 10px;
+            border-left: 4px solid var(--primary);
+            border-radius: 4px;
+            list-style: none;
+        }
+
+        /* Quiz Screen */
+        .question-text {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--dark);
+        }
+
+        .question-image {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn-option {
+            background-color: var(--light);
+            color: var(--dark);
+            border: 2px solid #bdc3c7;
+            text-align: left;
+        }
+
+        .btn-option:hover:not(:disabled) {
+            background-color: #e0e6ed;
+        }
+
+        .btn-option.correct {
+            background-color: var(--correct);
+            color: white;
+            border-color: var(--correct);
+        }
+
+        .btn-option.incorrect {
+            background-color: var(--incorrect);
+            color: white;
+            border-color: var(--incorrect);
+        }
+
+        .pembahasan {
+            background-color: #e8f4f8;
+            border-left: 4px solid var(--primary);
+            padding: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .score-display {
+            text-align: right;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #1a1a1a;
+            color: #dcdcdc;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.9rem;
+            margin-top: auto;
+        }
+
+        .footer a {
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        Kode Soal: JWA-STS-K4-S2-HOTS
+    </div>
+
+    <div class="container">
+        <div id="login-screen">
+            <h2 class="login-title">Ujian Sumatif Tengah Semester<br>Bahasa Jawa - Kelas 4</h2>
+            <div class="input-group">
+                <input type="text" id="input-nama" placeholder="Isikan Nama Lengkap" required>
+            </div>
+            <div class="input-group">
+                <input type="text" id="input-kelas" placeholder="Isikan Kelas" required>
+            </div>
+            
+            <button class="btn btn-start" onclick="startQuiz()">Mulai Kuis</button>
+            <br>
+            <a href="../index.html" class="btn btn-home">Kembali ke Home</a>
+
+            <div class="history-section">
+                <h3>Riwayat Pencapaian Skor</h3>
+                <ul id="history-list" style="padding-left: 0;"></ul>
+            </div>
+        </div>
+
+        <div id="quiz-screen" style="display: none;">
+            <div class="score-display">Skor Sementara: <span id="current-score">0</span> / 100</div>
+            
+            <div id="question-container">
+            </div>
+
+            <div class="nav-buttons">
+                <button class="btn btn-nav" id="btn-prev" onclick="prevQuestion()" style="display: none;">Soal Sebelumnya</button>
+                <button class="btn btn-nav" id="btn-next" onclick="nextQuestion()">Soal Selanjutnya</button>
+                <button class="btn btn-start" id="btn-finish" onclick="finishQuiz()" style="display: none;">Selesaikan Kuis</button>
+            </div>
+        </div>
+
+        <div id="result-screen" style="display: none; text-align: center;">
+            <h2 class="login-title">Kuis Selesai!</h2>
+            <p style="font-size: 1.2rem;">Skor Akhir Anda: <strong id="final-score" style="font-size: 1.5rem; color: var(--primary);">0</strong></p>
+            <button class="btn btn-home" onclick="location.reload()">Kembali ke Halaman Awal</button>
+        </div>
+    </div>
+
+    <div class="footer">
+        &copy; <span id="year"></span> Oleh: Dwi Endrasto | Dibuat dengan ❤️ untuk generasi cerdas bangsa<br>
+        
+    </div>
+
+    <script>
+        // --- KEAMANAN HALAMAN ---
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('copy', event => event.preventDefault());
+        document.addEventListener('paste', event => event.preventDefault());
+        document.addEventListener('cut', event => event.preventDefault());
+
+        // --- PENGATURAN FOOTER ---
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // --- IDENTIFIKATOR UNIK & STORAGE ---
+        const QUIZ_ID = "JWA-STS-K4-S2-HOTS";
+        const STORAGE_KEY = `quiz_${QUIZ_ID}_history`;
+
+        // --- DATA SOAL ---
+        const rawQuestions = [
+            {
+                img: "gambar/soal1_wayang.jpg", imgAlt: "Gambar Wayang Kulit Werkudara",
+                text: "Sapa jeneng paraga wayang ing gambar kasebut?",
+                choices: [ { text: "Raden Arjuna", isCorrect: false }, { text: "Raden Bima", isCorrect: true }, { text: "Raden Nakula", isCorrect: false }, { text: "Raden Sadewa", isCorrect: false } ],
+                explanation: "Pembahasan: Gambar kasebut nuduhake Raden Bima utawa Werkudara sing duwe kuku Pancanaka."
+            },
+            {
+                img: "gambar/soal2_gamelan.jpg", imgAlt: "Gambar Ricikan Gamelan Kendhang",
+                text: "Piranti gamelan iki cara nabuhe kepriye?",
+                choices: [ { text: "Dikebuk tangane", isCorrect: true }, { text: "Dithuthuk gandhen", isCorrect: false }, { text: "Disebul cangkem", isCorrect: false }, { text: "Dikesek rebab", isCorrect: false } ],
+                explanation: "Pembahasan: Kendhang iku piranti gamelan sing cara nabuhe dikebuk nganggo epek-epek tangan."
+            },
+            {
+                img: "gambar/soal3_tembang.jpg", imgAlt: "Teks Tembang Gambuh",
+                text: "Pira cacahe gatra tembang macapat kasebut?",
+                choices: [ { text: "Papat gatra", isCorrect: false }, { text: "Lima gatra", isCorrect: true }, { text: "Enem gatra", isCorrect: false }, { text: "Pitu gatra", isCorrect: false } ],
+                explanation: "Pembahasan: Tembang Gambuh iku nduweni paugeran guru gatra cacah lima ing saben padha."
+            },
+            {
+                img: "gambar/soal4_gunungan.jpg", imgAlt: "Gambar Gunungan Wayang",
+                text: "Gunungan wayang kuwi nggambarake kahanan apa?",
+                choices: [ { text: "Alam semesta", isCorrect: true }, { text: "Keraton agung", isCorrect: false }, { text: "Alas gung", isCorrect: false }, { text: "Segara kidul", isCorrect: false } ],
+                explanation: "Pembahasan: Gunungan utawa kayon ing wayang nggambarake alam semesta lan isine."
+            },
+            {
+                img: "gambar/soal5_punakawan.jpg", imgAlt: "Gambar Semar",
+                text: "Sapa asmane tokoh punakawan ing gambar?",
+                choices: [ { text: "Kyai Semar", isCorrect: true }, { text: "Nala Gareng", isCorrect: false }, { text: "Ki Petruk", isCorrect: false }, { text: "Bagong Lucu", isCorrect: false } ],
+                explanation: "Pembahasan: Paraga kasebut yaiku Kyai Semar, bapake para punakawan."
+            },
+            { text: "Apa jenis crita rakyat Tangkuban Perahu?", choices: [ { text: "Legendha alam", isCorrect: true }, { text: "Mitos kuna", isCorrect: false }, { text: "Fabel kewan", isCorrect: false }, { text: "Sage wiran", isCorrect: false } ], explanation: "Pembahasan: Tangkuban Perahu kalebu legendha amarga nyritakake asale panggonan alam." },
+            { text: "Sapa tokoh utama crita Timun Mas?", choices: [ { text: "Mbok Srini", isCorrect: false }, { text: "Timun Mas", isCorrect: true }, { text: "Buto Ijo", isCorrect: false }, { text: "Jaka Tarub", isCorrect: false } ], explanation: "Pembahasan: Tokoh utama kang dadi sorotan yaiku bocah wadon jenenge Timun Mas." },
+            { text: "Tembung 'kaloka' ing crita tegese apa?", choices: [ { text: "Kondhang banget", isCorrect: true }, { text: "Sugih mblegedhu", isCorrect: false }, { text: "Sakti mandraguna", isCorrect: false }, { text: "Wani mati", isCorrect: false } ], explanation: "Pembahasan: Kaloka asale saka tembung kawi kang tegese kondhang utawa misuwur." },
+            { text: "Gagasan pokok crita Bawang Merah yaiku?", choices: [ { text: "Sipat srakah", isCorrect: false }, { text: "Balesan becik", isCorrect: true }, { text: "Wani wongtua", isCorrect: false }, { text: "Tansah ngapusi", isCorrect: false } ], explanation: "Pembahasan: Ide pokoke yaiku wong sing sabar bakal entuk balesan becik." },
+            { text: "Guru wilangan tembang Gambuh gatra kapisan?", choices: [ { text: "Pitu wanda", isCorrect: true }, { text: "Wolu wanda", isCorrect: false }, { text: "Sanga wanda", isCorrect: false }, { text: "Sepuluh wanda", isCorrect: false } ], explanation: "Pembahasan: Gatra kapisan tembang Gambuh cacahe ana 7 wanda (7u)." },
+            { text: "Guru lagu tembang Gambuh gatra kapisan?", choices: [ { text: "Swara a", isCorrect: false }, { text: "Swara i", isCorrect: false }, { text: "Swara u", isCorrect: true }, { text: "Swara e", isCorrect: false } ], explanation: "Pembahasan: Gatra kapisan tiba swara 'u' (7u)." },
+            { text: "Tembang Gambuh lumrahe menehi pitutur ngenani?", choices: [ { text: "Sopan santun", isCorrect: false }, { text: "Tindak tanduk", isCorrect: true }, { text: "Golek bandha", isCorrect: false }, { text: "Perang tandhing", isCorrect: false } ], explanation: "Pembahasan: Watak tembang Gambuh cocok kanggo aweh pitutur babagan tindak tanduk." },
+            { text: "Ukara 'Kula badhe kesah' kalebu basa?", choices: [ { text: "Ngoko lugu", isCorrect: false }, { text: "Ngoko alus", isCorrect: false }, { text: "Krama lugu", isCorrect: true }, { text: "Krama alus", isCorrect: false } ], explanation: "Pembahasan: 'Kula badhe kesah' kuwi krama lugu (kanggo awake dhewe)." },
+            { text: "Bapak maca koran. Krama aluse kepriye?", choices: [ { text: "Bapak maos", isCorrect: true }, { text: "Bapak moco", isCorrect: false }, { text: "Bapak ningali", isCorrect: false }, { text: "Bapak nyawang", isCorrect: false } ], explanation: "Pembahasan: Tembung maca yen dikramakake alus dadi maos." },
+            { text: "Basa kramane tembung 'adus' yaiku apa?", choices: [ { text: "Tindak siram", isCorrect: true }, { text: "Adus toya", isCorrect: false }, { text: "Lunga adus", isCorrect: false }, { text: "Guyang banyu", isCorrect: false } ], explanation: "Pembahasan: Krama inggile adus iku siram." }
+        ];
+
+        const additionalQuestions = [
+            { text: "Tembung sanepa 'pait madu' tegese kepriye?", choices: [{text: "Manis banget", isCorrect: true}, {text: "Pait banget", isCorrect: false}, {text: "Asem banget", isCorrect: false}, {text: "Legi sithik", isCorrect: false}], explanation: "Pembahasan: Sanepa iku unen-unen sing tegese kosok balen. Pait madu tegese manis banget." },
+            { text: "Tembung camboran 'nagasari' wujude panganan apa?", choices: [{text: "Jajan pasar", isCorrect: true}, {text: "Sega tumpeng", isCorrect: false}, {text: "Jangan lodeh", isCorrect: false}, {text: "Sambel trasi", isCorrect: false}], explanation: "Pembahasan: Nagasari iku jeneng jajan pasar (camboran wutuh)." },
+            { text: "Sapa asmane ibune Raden Werkudara?", choices: [{text: "Dewi Kunthi", isCorrect: true}, {text: "Dewi Madrim", isCorrect: false}, {text: "Dewi Sinta", isCorrect: false}, {text: "Dewi Arimbi", isCorrect: false}], explanation: "Pembahasan: Ibune Pandhawa (Puntadewa, Werkudara, Janaka) yaiku Dewi Kunthi." },
+            { text: "Gaman utawa aji-ajine Raden Janaka apa?", choices: [{text: "Panah Pasopati", isCorrect: true}, {text: "Gada Rujakpolo", isCorrect: false}, {text: "Jamus Kalimasada", isCorrect: false}, {text: "Kuku Pancanaka", isCorrect: false}], explanation: "Pembahasan: Raden Janaka (Arjuna) nduweni gaman wujud Panah Pasopati." },
+            { text: "Kesatriyane Raden Werkudara manggon ing ngendi?", choices: [{text: "Jodhipati rejo", isCorrect: true}, {text: "Madukara asri", isCorrect: false}, {text: "Amarta pura", isCorrect: false}, {text: "Bumi retawu", isCorrect: false}], explanation: "Pembahasan: Raden Werkudara satriya ing Jodhipati." },
+            { text: "Pagaweane wong sing ngelakokake wayang apa?", choices: [{text: "Dhalang wayang", isCorrect: true}, {text: "Niyaga gamelan", isCorrect: false}, {text: "Sindhen tembang", isCorrect: false}, {text: "Wiraswara tembang", isCorrect: false}], explanation: "Pembahasan: Dhalang yaiku wong sing tugase ngelakokake wayang kulit." },
+            { text: "Yen ketemu guru wayah esuk ngucapake?", choices: [{text: "Sugeng enjing", isCorrect: true}, {text: "Sugeng siang", isCorrect: false}, {text: "Sugeng sonten", isCorrect: false}, {text: "Sugeng dalu", isCorrect: false}], explanation: "Pembahasan: Sapa aruh wektu esuk nganggo basa krama yaiku sugeng enjing." },
+            { text: "Sadurunge mlebu omahe wong liya kudu?", choices: [{text: "Nothok lawang", isCorrect: true}, {text: "Mlebu langsung", isCorrect: false}, {text: "Mbuwang sampah", isCorrect: false}, {text: "Turu njaba", isCorrect: false}], explanation: "Pembahasan: Tata krama bertamu iku kudu nothok lawang lan uluk salam." },
+            { text: "Matur marang simbah kudu nggunakake basa?", choices: [{text: "Krama alus", isCorrect: true}, {text: "Ngoko lugu", isCorrect: false}, {text: "Krama lugu", isCorrect: false}, {text: "Ngoko alus", isCorrect: false}], explanation: "Pembahasan: Marang wong sing luwih tuwa kudu nggunakake krama alus (inggil)." },
+            { text: "Sikep awak nalika matur wong tuwa?", choices: [{text: "Ndhungkluk sopan", isCorrect: true}, {text: "Mendelik mripat", isCorrect: false}, {text: "Tolak cangkeng", isCorrect: false}, {text: "Mungkur geger", isCorrect: false}], explanation: "Pembahasan: Sikep (gestur) sing santun yaiku ndhungkluk utawa ngajeni." },
+            { text: "Teks narasi iku nyritakake babagan apa?", choices: [{text: "Urutan kedadean", isCorrect: true}, {text: "Wujud barang", isCorrect: false}, {text: "Panyaruwe kahanan", isCorrect: false}, {text: "Gagasan utama", isCorrect: false}], explanation: "Pembahasan: Teks narasi nyritakake prastawa utawa kedadean kanthi urut." },
+            { text: "Teks sing nggambarake kahanan kanthi cetha?", choices: [{text: "Teks deskripsi", isCorrect: true}, {text: "Teks narasi", isCorrect: false}, {text: "Teks argumentasi", isCorrect: false}, {text: "Teks persuasi", isCorrect: false}], explanation: "Pembahasan: Teks deskripsi tujuane nggambarake obyek supaya pamaca kaya ngalami dhewe." },
+            { text: "Sandhangan swara 'i' ing aksara Jawa?", choices: [{text: "Wulu cilik", isCorrect: true}, {text: "Suku ngisor", isCorrect: false}, {text: "Taling kiwa", isCorrect: false}, {text: "Pepet dhuwur", isCorrect: false}], explanation: "Pembahasan: Sandhangan swara (i) arane wulu." },
+            { text: "Panyigeg wanda kanggo mateni aksara 'r'?", choices: [{text: "Layar dhuwur", isCorrect: true}, {text: "Cecak dhuwur", isCorrect: false}, {text: "Wignyan mburi", isCorrect: false}, {text: "Pangkon mburi", isCorrect: false}], explanation: "Pembahasan: Layar digunakake kanggo panyigeg wanda (r)." },
+            { text: "Tembang Gambuh asale saka tembung apa?", choices: [{text: "Jumbuh cocog", isCorrect: true}, {text: "Pisah adoh", isCorrect: false}, {text: "Lunga adoh", isCorrect: false}, {text: "Nesu banget", isCorrect: false}], explanation: "Pembahasan: Gambuh asale saka tembung jumbuh kang tegese cocog utawa gathuk." }
+        ];
+
+        // Penggabungan array aman untuk mencegah hilangnya data
+        const allQuestions = [...rawQuestions.slice(0, 10), rawQuestions[14], ...additionalQuestions];
+
+        // --- VARIABEL SISTEM ---
+        let questions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userAnswers = []; // Aturan 1: Flagging
+        let userName = "";
+        let userClass = "";
+
+        // Fungsi Acak (Fisher-Yates)
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // --- ALUR KUIS ---
+        function startQuiz() {
+            const nameInput = document.getElementById('input-nama').value.trim();
+            const classInput = document.getElementById('input-kelas').value.trim();
+
+            if (!nameInput || !classInput) {
+                alert("Silakan isikan Nama dan Kelas terlebih dahulu!");
+                return;
+            }
+
+            // Aturan 3: Reset Variabel Secara Menyeluruh
+            userName = nameInput;
+            userClass = classInput;
+            score = 0;
+            currentQuestionIndex = 0;
+            
+            // Persiapan Data Acak
+            questions = JSON.parse(JSON.stringify(allQuestions));
+            shuffleArray(questions);
+            questions.forEach(q => shuffleArray(q.choices));
+            
+            // Aturan 1: Set Flag kosong
+            userAnswers = new Array(questions.length).fill(null);
+
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('quiz-screen').style.display = 'block';
+            updateScoreDisplay();
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = questions[currentQuestionIndex];
+            const container = document.getElementById('question-container');
+            
+            let html = `<div class="question-text"><strong>Soal ${currentQuestionIndex + 1} dari ${questions.length}</strong><br><br>${q.text}</div>`;
+            
+            if (q.img) {
+                html = `<img src="${q.img}" alt="${q.imgAlt}" class="question-image"><br>` + html;
+            }
+
+            html += `<div class="options-grid">`;
+            q.choices.forEach((choice, index) => {
+                const isAnswered = userAnswers[currentQuestionIndex] !== null;
+                const isSelected = userAnswers[currentQuestionIndex] === index;
+                
+                let btnClass = "btn btn-option";
+                if (isAnswered) {
+                    if (choice.isCorrect) btnClass += " correct";
+                    else if (isSelected) btnClass += " incorrect";
+                }
+
+                html += `<button class="${btnClass}" onclick="selectAnswer(${index})" ${isAnswered ? 'disabled' : ''}>${choice.text}</button>`;
+            });
+            html += `</div>`;
+
+            const isAnswered = userAnswers[currentQuestionIndex] !== null;
+            html += `<div class="pembahasan" id="pembahasan-box" style="display: ${isAnswered ? 'block' : 'none'};">${q.explanation}</div>`;
+
+            container.innerHTML = html;
+
+            document.getElementById('btn-prev').style.display = currentQuestionIndex > 0 ? 'inline-block' : 'none';
+            
+            if (currentQuestionIndex === questions.length - 1) {
+                document.getElementById('btn-next').style.display = 'none';
+                document.getElementById('btn-finish').style.display = isAnswered ? 'inline-block' : 'none';
+            } else {
+                document.getElementById('btn-next').style.display = isAnswered ? 'inline-block' : 'none';
+                document.getElementById('btn-finish').style.display = 'none';
+            }
+        }
+
+        function selectAnswer(choiceIndex) {
+            if (userAnswers[currentQuestionIndex] !== null) return; 
+            
+            // Kunci Jawaban
+            userAnswers[currentQuestionIndex] = choiceIndex;
+            
+            updateScoreDisplay();
+            renderQuestion(); 
+        }
+
+        function updateScoreDisplay() {
+            // Hitung total benar berdasarkan Flag
+            let correctCount = 0;
+            questions.forEach((q, index) => {
+                if (userAnswers[index] !== null) {
+                    if (q.choices[userAnswers[index]].isCorrect) {
+                        correctCount++;
+                    }
+                }
+            });
+
+            // Aturan 4: Perhitungan Berbasis Persentase
+            let calculatedScore = (correctCount / questions.length) * 100;
+            
+            // Aturan 2: Penggunaan Fungsi Pembatas (limiter)
+            score = Math.min(Math.round(calculatedScore), 100);
+            
+            document.getElementById('current-score').textContent = score;
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+            }
+        }
+
+        function finishQuiz() {
+            updateScoreDisplay(); // Final Kalkulasi
+
+            document.getElementById('quiz-screen').style.display = 'none';
+            document.getElementById('result-screen').style.display = 'block';
+            document.getElementById('final-score').textContent = score;
+
+            saveHistory();
+        }
+
+        // --- MANAJEMEN RIWAYAT & KOMUNIKASI ---
+        function saveHistory() {
+            const date = new Date();
+            const timeString = `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
+            
+            const sessionData = {
+                name: userName,
+                class: userClass,
+                score: score,
+                quiz_id: QUIZ_ID, // Tag khusus
+                time: timeString
+            };
+
+            // 1. Simpan di Lokal (Tanpa hapus history lama)
+            let history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            history.unshift(sessionData); // Letakkan di paling atas
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+
+            // ==========================================
+            // 2. KOMUNIKASI DENGAN FILE rekap.html 
+            // ==========================================
+            
+            // Metode A: Global LocalStorage
+            let sharedRekap = JSON.parse(localStorage.getItem("global_rekap_skor")) || [];
+            sharedRekap.unshift(sessionData);
+            localStorage.setItem("global_rekap_skor", JSON.stringify(sharedRekap));
+
+            // Metode B: postMessage (Untuk iframe)
+            const messagePayload = {
+                type: 'QUIZ_SUBMITTED',
+                payload: sessionData
+            };
+            if (window.opener) {
+                window.opener.postMessage(messagePayload, '*');
+            } else if (window.parent !== window) {
+                window.parent.postMessage(messagePayload, '*');
+            }
+        }
+
+        function loadHistory() {
+            let history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            const list = document.getElementById('history-list');
+            list.innerHTML = '';
+            
+            if (history.length === 0) {
+                list.innerHTML = '<li>Belum ada riwayat pengerjaan.</li>';
+                return;
+            }
+
+            // Tampilkan secara berurutan sesuai data yang sudah di unshift (terbaru di atas)
+            history.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>${item.name}</strong> (Kelas ${item.class}) - Skor: <strong>${item.score}</strong> <br><small style="color:gray;">🕒 ${item.time}</small>`;
+                list.appendChild(li);
+            });
+        }
+
+        window.onload = () => {
+            loadHistory();
+        };
+    </script>
+</body>
+</html>

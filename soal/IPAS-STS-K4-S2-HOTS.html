@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis IPAS - STS Kelas 4</title>
+    <style>
+        /* Mencegah Copy Paste */
+        body {
+            font-family: 'Comic Sans MS', 'Fredoka One', cursive, sans-serif;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            user-select: none; /* Anti copy paste */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+        }
+
+        .header-top {
+            background-color: #ff9a9e;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            flex: 1;
+            max-width: 800px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+            border: 4px dashed #ffb199;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #ff6a88;
+        }
+
+        /* Form Login */
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+        .login-form input {
+            padding: 10px;
+            width: 80%;
+            max-width: 300px;
+            border: 2px solid #ff9a9e;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        /* Tombol */
+        .btn {
+            padding: 12px 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: white;
+            background: #ff6a88;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+            text-decoration: none;
+            text-align: center;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+            background: #ff9a9e;
+        }
+        .btn-home {
+            background: #4facfe;
+            margin-bottom: 20px;
+        }
+        .btn-nav {
+            background: #f6d365;
+            color: #333;
+        }
+
+        /* History */
+        .history-box {
+            margin-top: 30px;
+            width: 100%;
+            border-top: 3px solid #eee;
+            padding-top: 15px;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        .history-list {
+            list-style: none;
+            padding: 0;
+        }
+        .history-list li {
+            background: #fdfbfb;
+            margin: 5px 0;
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 5px solid #ff6a88;
+            font-size: 0.9rem;
+        }
+
+        /* Quiz Area */
+        #quiz-screen {
+            display: none;
+        }
+        .score-display {
+            text-align: right;
+            font-weight: bold;
+            color: #4facfe;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        .question-text {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .question-img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        .option-btn {
+            padding: 15px;
+            background: #f1f2f6;
+            border: 2px solid #dfe4ea;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+        .option-btn:hover:not(:disabled) {
+            background: #eccc68;
+        }
+        .option-btn.correct {
+            background: #2ed573 !important;
+            color: white;
+            border-color: #2ed573;
+        }
+        .option-btn.wrong {
+            background: #ff4757 !important;
+            color: white;
+            border-color: #ff4757;
+        }
+
+        .explanation {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f4f8;
+            border-left: 5px solid #4facfe;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #1e272e;
+            color: #d2dae2;
+            text-align: center;
+            padding: 15px;
+            margin-top: auto;
+            font-size: 0.9rem;
+        }
+        .footer a {
+            color: #ff9a9e;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-top">
+        Kode Soal: IPAS-STS-K4-S2-HOTS
+    </div>
+
+    <div class="container">
+        <div id="login-screen">
+            <h1>Selamat Datang di Kuis Pintar! 🎉</h1>
+            <div class="login-form">
+                <input type="text" id="student-name" placeholder="Masukkan Nama Lengkapmu" required>
+                <input type="text" id="student-class" placeholder="Masukkan Kelasmu" required>
+                <button class="btn" onclick="startQuiz()">Mulai Kuis Sekarang!</button>
+                <a href="../index.html" class="btn btn-home">🏠 Kembali ke Home</a>
+            </div>
+
+            <div class="history-box">
+                <h2>Riwayat Skor Juara 🏆</h2>
+                <ul class="history-list" id="history-list">
+                    </ul>
+            </div>
+        </div>
+
+        <div id="quiz-screen">
+            <div class="score-display">Skor Sementara: <span id="current-score">0</span></div>
+            
+            <h3 id="question-number">Soal 1/25</h3>
+            <img id="question-image" class="question-img" src="" alt="Gambar Soal">
+            <div id="question-text" class="question-text">Teks soal akan muncul di sini.</div>
+            
+            <div id="options-container" class="options-grid">
+                </div>
+
+            <div id="explanation-box" class="explanation">
+                <strong>Pembahasan:</strong> <span id="explanation-text"></span>
+            </div>
+
+            <div class="nav-buttons">
+                <button class="btn btn-nav" id="btn-prev" onclick="prevQuestion()" style="visibility: hidden;">⬅️ Sebelumnya</button>
+                <button class="btn btn-nav" id="btn-next" onclick="nextQuestion()" style="display: none;">Selanjutnya ➡️</button>
+                <button class="btn" id="btn-finish" onclick="finishQuiz()" style="display: none;">Selesai & Simpan 💾</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        &copy; <span id="year"></span> Oleh: Dwi Endrasto | Dibuat dengan ❤️ untuk generasi cerdas bangsa
+    </div>
+
+    <script>
+        // Set Tahun Otomatis
+        document.getElementById("year").innerText = new Date().getFullYear();
+
+        // Mencegah Klik Kanan & Copy Paste (Keamanan)
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('copy', (e) => { e.preventDefault(); });
+        document.addEventListener('paste', (e) => { e.preventDefault(); });
+        document.addEventListener('cut', (e) => { e.preventDefault(); });
+
+        // IDENTIFIKATOR UNIK - Mencegah bentrok (nyasar) dengan modul kuis lainnya
+        const QUIZ_ID = "IPAS-STS-K4-S2-HOTS";
+        const STORAGE_KEY = `quiz_${QUIZ_ID}_history`;
+
+        // Data Soal (25 Soal, 5 Bergambar)
+        const masterQuestions = [
+            {
+                text: "Perhatikan gambar kumpulan hewan berikut ini! Berdasarkan variasi yang terlihat, gambar tersebut menunjukkan keanekaragaman hayati tingkat apa?",
+                image: "gambar/soal_1_keanekaragaman.jpg", 
+                options: ["Keanekaragaman tingkat genetik", "Keanekaragaman tingkat spesies", "Keanekaragaman tingkat populasi", "Keanekaragaman tingkat ekosistem"],
+                answer: "Keanekaragaman tingkat spesies",
+                explanation: "Gambar berbagai jenis hewan yang berbeda menunjukkan keanekaragaman spesies."
+            },
+            {
+                text: "Masyarakat sering memanfaatkan sumber daya alam tumbuhan. Tumbuhan manakah yang sering diekstrak untuk dijadikan bahan pewangi alami?",
+                options: ["Bunga melati dan daun pandan", "Daun sirih dan batang kemiri", "Akar wangi dan daun kenikir", "Bunga mawar dan kulit manggis"],
+                answer: "Bunga melati dan daun pandan",
+                explanation: "Bunga melati dan daun pandan memiliki aroma wangi khas yang sering digunakan sebagai pewangi."
+            },
+            {
+                text: "Perhatikan daftar sumber daya alam berikut: 1) Air, 2) Batu bara, 3) Angin, 4) Minyak bumi. Pengelompokan manakah yang tepat?",
+                options: ["Satu dan tiga dapat diperbarui", "Dua dan empat dapat diperbarui", "Satu dan dua tidak diperbarui", "Tiga dan empat tidak diperbarui"],
+                answer: "Satu dan tiga dapat diperbarui",
+                explanation: "Air dan angin adalah sumber daya alam yang dapat diperbarui, sedangkan batu bara dan minyak bumi tidak."
+            },
+            {
+                text: "Wilayah dataran rendah dengan tanah subur dan aliran air lancar umumnya mendorong penduduknya untuk bekerja sebagai apa?",
+                options: ["Petani padi dan tanaman palawija", "Nelayan tangkap ikan air tawar", "Penambang pasir dan batu kapur", "Peternak sapi dan kambing perah"],
+                answer: "Petani padi dan tanaman palawija",
+                explanation: "Dataran rendah yang subur dan berair sangat cocok untuk kegiatan pertanian."
+            },
+            {
+                text: "Setiap orang memiliki peran di masyarakat. Manakah pasangan peran dan tugas yang paling sesuai dalam menjaga kerukunan?",
+                options: ["Warga desa wajib menjaga keamanan", "Ketua RT wajib membagikan sembako", "Kepala desa wajib membangun rumah", "Anak sekolah wajib membayar pajak"],
+                answer: "Warga desa wajib menjaga keamanan",
+                explanation: "Menjaga keamanan dan ketertiban desa (seperti siskamling) adalah tugas seluruh warga."
+            },
+            {
+                text: "Sebagai pelajar di sekolah, tindakan manakah yang mencerminkan pemenuhan tugas dan tanggung jawab tertinggi?",
+                options: ["Mengikuti pelajaran dengan sangat tekun", "Membeli makanan di kantin sekolah", "Mengajak teman bermain saat istirahat", "Meminjam buku perpustakaan daerah luar"],
+                answer: "Mengikuti pelajaran dengan sangat tekun",
+                explanation: "Tanggung jawab utama seorang pelajar di lingkungan sekolah adalah belajar dengan giat."
+            },
+            {
+                text: "Perhatikan gambar kegiatan di atas! Bentuk interaksi sosial antara satu orang yang berbicara di depan banyak orang disebut interaksi...",
+                image: "gambar/soal_7_interaksi.jpg",
+                options: ["Antara satu individu dengan kelompok", "Antara satu kelompok dengan kelompok", "Antara satu individu dengan individu", "Antara satu kelompok dengan individu"],
+                answer: "Antara satu individu dengan kelompok",
+                explanation: "Guru yang mengajar murid di kelas adalah contoh interaksi individu dengan kelompok."
+            },
+            {
+                text: "Interaksi sosial bisa berdampak negatif. Manakah kejadian berikut yang merupakan interaksi sosial dengan dampak negatif?",
+                options: ["Bertengkar karena merebutkan mainan baru", "Berdebat saat diskusi kerja kelompok", "Berlomba lari saat pelajaran olahraga", "Bersaing mendapatkan nilai ujian tertinggi"],
+                answer: "Bertengkar karena merebutkan mainan baru",
+                explanation: "Pertengkaran adalah bentuk interaksi disosiatif yang mengarah pada perpecahan."
+            },
+            {
+                text: "Dodi melihat mangga golek, arumanis, dan manalagi di kebun. Perbedaan buah mangga tersebut menunjukkan adanya...",
+                image: "gambar/mangga.jpg",
+                options: ["Keanekaragaman pada tingkat gen spesies", "Keanekaragaman pada tingkat jenis tumbuhan", "Keanekaragaman pada tingkat ekosistem alam", "Keanekaragaman pada tingkat populasi hewan"],
+                answer: "Keanekaragaman pada tingkat gen spesies",
+                explanation: "Berbagai jenis mangga (satu spesies) menunjukkan keanekaragaman pada tingkat gen (varietas)."
+            },
+            {
+                text: "Singa, harimau, dan macan tutul berada dalam satu keluarga kucing. Hal ini menunjukkan contoh dari...",
+                options: ["Keanekaragaman tingkat spesies jenis hewan", "Keanekaragaman tingkat genetik dalam hewan", "Keanekaragaman tingkat ekosistem hutan darat", "Keanekaragaman tingkat populasi dalam hutan"],
+                answer: "Keanekaragaman tingkat spesies jenis hewan",
+                explanation: "Hewan berbeda spesies namun dalam satu famili menunjukkan keanekaragaman tingkat spesies."
+            },
+            {
+                text: "Keluarga Rina menanam berbagai tumbuhan di halaman. Tumbuhan manakah yang paling tepat dikelompokkan sebagai tanaman apotek hidup?",
+                options: ["Tanaman jahe, kunyit, dan daun kencur", "Tanaman mawar, melati, dan bunga anggrek", "Tanaman mangga, jeruk, dan pohon pepaya", "Tanaman bayam, kangkung, dan sayur sawi"],
+                answer: "Tanaman jahe, kunyit, dan daun kencur",
+                explanation: "Jahe, kunyit, dan kencur adalah tanaman yang biasa ditanam sebagai obat keluarga (apotek hidup)."
+            },
+            {
+                text: "Minyak bumi harus diolah. Manakah pasangan hasil olahan minyak bumi dan pemanfaatannya yang paling tepat?",
+                options: ["Cairan avtur digunakan untuk bahan pesawat", "Cairan bensin digunakan untuk bahan bangunan", "Cairan aspal digunakan untuk pelumas mesin", "Cairan solar digunakan untuk memasak makanan"],
+                answer: "Cairan avtur digunakan untuk bahan pesawat",
+                explanation: "Avtur (Aviation Turbine Fuel) adalah bahan bakar khusus untuk pesawat terbang."
+            },
+            {
+                text: "Di daerah dataran tinggi bersuhu dingin, peluang usaha masyarakat apa yang paling cocok untuk dikembangkan?",
+                options: ["Membuka lahan perkebunan teh dan stroberi", "Membuat tambak budidaya ikan bandeng laut", "Membangun pabrik pengolahan ikan asin kering", "Membuka jasa penyewaan kapal nelayan laut"],
+                answer: "Membuka lahan perkebunan teh dan stroberi",
+                explanation: "Suhu dingin di dataran tinggi sangat cocok untuk tanaman teh, stroberi, dan sayuran."
+            },
+            {
+                text: "Warga Desa Suka Maju rutin mengadakan pembersihan selokan setiap hari Minggu. Manfaat utama dari kegiatan tersebut adalah...",
+                options: ["Menjaga kebersihan dan kesehatan lingkungan sekitar", "Mendapatkan pujian langsung dari kepala desa", "Mengisi waktu luang santai di hari libur", "Menambah jumlah penghasilan bagi warga desa"],
+                answer: "Menjaga kebersihan dan kesehatan lingkungan sekitar",
+                explanation: "Tujuan utama kerja bakti membersihkan lingkungan adalah agar lingkungan sehat dan bebas banjir."
+            },
+            {
+                text: "Di lingkungan tempat tinggal kita terdapat norma. Manakah tindakan yang merupakan pelaksanaan dari peraturan tidak tertulis?",
+                options: ["Menyapa warga tetangga saat saling berpapasan", "Memiliki Kartu Tanda Penduduk yang resmi", "Membayar pajak kendaraan dengan tepat waktu", "Memakai helm standar saat mengendarai motor"],
+                answer: "Menyapa warga tetangga saat saling berpapasan",
+                explanation: "Menyapa adalah bentuk norma kesopanan yang merupakan aturan tidak tertulis di masyarakat."
+            },
+            {
+                text: "Siska mendapat giliran piket menyapu kelas, namun langsung pulang. Akibat yang paling mungkin terjadi adalah...",
+                options: ["Ruang kelas kotor dan mengganggu proses belajar", "Ruang kelas menjadi sangat bersih dan rapi", "Teman sekelas merasa sangat senang kepadanya", "Siska mendapatkan nilai ujian yang sangat tinggi"],
+                answer: "Ruang kelas kotor dan mengganggu proses belajar",
+                explanation: "Meninggalkan kewajiban piket menyebabkan kelas kotor sehingga tidak nyaman untuk belajar."
+            },
+            {
+                text: "Budi sering menerobos lampu merah saat berangkat sekolah. Akibat paling berbahaya dari pelanggaran Budi adalah...",
+                options: ["Membahayakan keselamatan diri dan orang lain jalan", "Terlambat sampai di depan gerbang utama sekolah", "Ditegur oleh guru piket harian di sekolah", "Mendapatkan hukuman membersihkan seluruh ruang kelas"],
+                answer: "Membahayakan keselamatan diri dan orang lain jalan",
+                explanation: "Menerobos lampu merah melanggar aturan lalu lintas dan berisiko tinggi memicu kecelakaan."
+            },
+            {
+                text: "Saat musyawarah, Anton sering memotong pembicaraan temannya. Dampak buruk dari sikap egois Anton adalah...",
+                options: ["Terjadi perpecahan dan rasa tidak nyaman peserta", "Keputusan rapat kelas menjadi lebih cepat diambil", "Anton akan dipilih menjadi ketua kelas terbaik", "Semua teman pasti akan setuju dengan Anton"],
+                answer: "Terjadi perpecahan dan rasa tidak nyaman peserta",
+                explanation: "Tidak menghargai pendapat orang lain merusak suasana diskusi dan memicu perpecahan."
+            },
+            {
+                text: "Perhatikan gambar pisang berikut! Perbedaan bentuk dan rasa dari pisang ambon, raja, dan kepok menunjukkan variasi tingkat...",
+                image: "gambar/soal_19_pisang.jpg",
+                options: ["Keanekaragaman sifat genetik dalam satu spesies", "Keanekaragaman banyak spesies dalam satu ekosistem", "Keanekaragaman jenis ekosistem dalam satu wilayah", "Keanekaragaman jumlah populasi dalam satu komunitas"],
+                answer: "Keanekaragaman sifat genetik dalam satu spesies",
+                explanation: "Berbagai jenis pisang adalah kultivar yang menunjukkan keanekaragaman pada tingkat genetik."
+            },
+            {
+                text: "Perhatikan gambar di atas! Hewan dari bagian tengah Indonesia ini merupakan jenis fauna peralihan. Hewan apakah itu?",
+                image: "gambar/soal_20_fauna.jpg",
+                options: ["Hewan komodo purba dan babi rusa sulawesi", "Hewan harimau sumatera dan badak jawa bercula", "Burung indah cendrawasih dan burung kakatua raja", "Hewan gajah sumatera dan orang utan kalimantan"],
+                answer: "Hewan komodo purba dan babi rusa sulawesi",
+                explanation: "Komodo, anoa, dan babi rusa adalah contoh khas dari fauna tipe peralihan (kawasan Wallacea)."
+            },
+            {
+                text: "Tanah, air, matahari, hewan, dan tumbuhan adalah alam kita. Dari daftar tersebut, yang termasuk sumber daya alam nonhayati adalah...",
+                options: ["Tanah liat padat, air sungai, sinar matahari", "Hewan ternak mamalia, tumbuhan liar, air sungai", "Sinar matahari panas, hewan ternak, tanah liat", "Tumbuhan hijau liar, air sungai, sinar matahari"],
+                answer: "Tanah liat padat, air sungai, sinar matahari",
+                explanation: "Nonhayati berarti sumber daya alam yang bukan berupa makhluk hidup."
+            },
+            {
+                text: "Masyarakat sekitar sungai besar di Kalimantan memanfaatkan perairan tersebut tidak hanya untuk transportasi perahu, tetapi juga untuk...",
+                options: ["Membuka kawasan pasar terapung penjual makanan", "Membangun area pabrik perakitan mobil mewah", "Membuat lahan perkebunan kelapa sawit luas", "Menambang bongkahan emas murni dalam jumlah"],
+                answer: "Membuka kawasan pasar terapung penjual makanan",
+                explanation: "Pasar terapung adalah ciri khas kegiatan ekonomi yang memanfaatkan sungai besar di Kalimantan."
+            },
+            {
+                text: "Di desa adat, dilarang menebang pohon di hutan keramat demi air. Aturan pelestarian tersebut termasuk dalam jenis...",
+                options: ["Aturan tidak tertulis atau adat istiadat warga", "Aturan resmi pemerintah pusat yang tertulis", "Aturan tegas hukum pidana negara kesatuan", "Aturan formal perundang-undangan wilayah daerah"],
+                answer: "Aturan tidak tertulis atau adat istiadat warga",
+                explanation: "Larangan berdasarkan kepercayaan turun-temurun di suatu desa merupakan norma adat (tidak tertulis)."
+            },
+            {
+                text: "Perhatikan ilustrasi gambar di atas! Kegiatan warga tersebut menunjukkan bentuk interaksi sosial yang bertujuan untuk...",
+                image: "gambar/soal_24_interaksi.jpg",
+                options: ["Mencapai tujuan bersama dengan sikap gotong royong", "Menciptakan arena persaingan antar kelompok warga", "Menunjukkan pamer kekuatan antar warga masyarakat", "Menyelesaikan konflik keras antar anggota keluarga"],
+                answer: "Mencapai tujuan bersama dengan sikap gotong royong",
+                explanation: "Kerja bakti membangun infrastruktur desa adalah interaksi asosiatif (gotong royong) untuk tujuan bersama."
+            },
+            {
+                text: "Setiap anak memiliki tanggung jawab di rumah membantu orang tua. Manakah tindakan yang mencerminkan tanggung jawab tersebut?",
+                options: ["Merapikan kembali tempat tidur setelah bangun", "Meminta tambahan uang saku lebih setiap hari", "Menonton siaran televisi hingga larut malam", "Bermain aplikasi game online sepanjang waktu"],
+                answer: "Merapikan kembali tempat tidur setelah bangun",
+                explanation: "Membersihkan kamar sendiri adalah wujud kemandirian dan tanggung jawab anak di rumah."
+            }
+        ];
+
+        let quizQuestions = [];
+        let currentIdx = 0;
+        let score = 0;
+        let studentData = {};
+
+        // Acak Array (Fisher-Yates)
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        // Load History Tanpa Dihapus
+        function loadHistory() {
+            const history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            const historyList = document.getElementById('history-list');
+            historyList.innerHTML = '';
+            if(history.length === 0) {
+                historyList.innerHTML = '<li>Belum ada juara yang tercatat. Ayo jadi yang pertama!</li>';
+            } else {
+                history.forEach(item => {
+                    // Gunakan item.time agar selaras dengan object yang dikirim ke rekap
+                    historyList.innerHTML += `<li>👨‍🎓 <strong>${item.name}</strong> (Kelas ${item.class}) - Skor: <strong>${item.score}</strong> <br><small>🕒 ${item.time}</small></li>`;
+                });
+            }
+        }
+
+        window.onload = loadHistory;
+
+        function startQuiz() {
+            const nameInput = document.getElementById('student-name').value.trim();
+            const classInput = document.getElementById('student-class').value.trim();
+
+            if (!nameInput || !classInput) {
+                alert("Halo! Isi nama dan kelasmu dulu ya agar nilainya tersimpan!");
+                return;
+            }
+
+            // Aturan 3: Reset Variabel Secara Menyeluruh
+            studentData = { name: nameInput, class: classInput };
+            currentIdx = 0;
+            score = 0;
+            
+            // Siapkan Soal (dan reset flag jawaban)
+            let clonedQuestions = JSON.parse(JSON.stringify(masterQuestions));
+            quizQuestions = shuffle(clonedQuestions).map(q => {
+                let opts = shuffle([...q.options]);
+                return { ...q, options: opts, isAnswered: false, userChoice: null }; // isAnswered sebagai flag
+            });
+
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('quiz-screen').style.display = 'block';
+            
+            updateScoreDisplay(); // Render skor 0 di awal
+            showQuestion();
+        }
+
+        // Kalkulasi Skor dengan Limiter
+        function updateScoreDisplay() {
+            // Aturan 1: Hitung jawaban benar berdasarkan flag array yang sudah dikunci (isAnswered)
+            let correctAnswers = quizQuestions.filter(q => q.isAnswered && q.userChoice === q.answer).length;
+            
+            // Aturan 4: Perhitungan Berbasis Persentase
+            let calculatedScore = (correctAnswers / quizQuestions.length) * 100;
+            
+            // Aturan 2: Penggunaan Fungsi Pembatas (limiter)
+            score = Math.min(Math.round(calculatedScore), 100);
+            
+            document.getElementById('current-score').innerText = score;
+        }
+
+        function showQuestion() {
+            const q = quizQuestions[currentIdx];
+            document.getElementById('question-number').innerText = `Soal ${currentIdx + 1} / 25`;
+            document.getElementById('question-text').innerText = q.text;
+
+            // Gambar
+            const imgEl = document.getElementById('question-image');
+            if (q.image) {
+                imgEl.src = q.image;
+                imgEl.style.display = 'block';
+            } else {
+                imgEl.style.display = 'none';
+            }
+
+            // Opsi Jawaban
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            q.options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                
+                // Jika sudah dijawab sebelumnya (Membaca flag)
+                if (q.isAnswered) {
+                    btn.disabled = true;
+                    if (opt === q.answer) btn.classList.add('correct');
+                    else if (opt === q.userChoice) btn.classList.add('wrong');
+                } else {
+                    btn.onclick = () => selectAnswer(btn, opt);
+                }
+                optionsContainer.appendChild(btn);
+            });
+
+            // Penjelasan
+            const expBox = document.getElementById('explanation-box');
+            if (q.isAnswered) {
+                document.getElementById('explanation-text').innerText = q.explanation;
+                expBox.style.display = 'block';
+            } else {
+                expBox.style.display = 'none';
+            }
+
+            // Navigasi
+            document.getElementById('btn-prev').style.visibility = currentIdx > 0 ? 'visible' : 'hidden';
+            
+            if (currentIdx === quizQuestions.length - 1) {
+                document.getElementById('btn-next').style.display = 'none';
+                document.getElementById('btn-finish').style.display = q.isAnswered ? 'inline-block' : 'none';
+            } else {
+                document.getElementById('btn-next').style.display = q.isAnswered ? 'inline-block' : 'none';
+                document.getElementById('btn-finish').style.display = 'none';
+            }
+        }
+
+        function selectAnswer(btn, selectedOpt) {
+            const q = quizQuestions[currentIdx];
+            
+            // Kunci jawaban (Flagging)
+            q.isAnswered = true;
+            q.userChoice = selectedOpt;
+
+            const allBtns = document.querySelectorAll('.option-btn');
+            allBtns.forEach(b => {
+                b.disabled = true;
+                if (b.innerText === q.answer) {
+                    b.classList.add('correct');
+                }
+            });
+
+            if (selectedOpt !== q.answer) {
+                btn.classList.add('wrong');
+            }
+
+            // Hitung ulang dan perbarui tampilan skor
+            updateScoreDisplay();
+
+            document.getElementById('explanation-text').innerText = q.explanation;
+            document.getElementById('explanation-box').style.display = 'block';
+
+            if (currentIdx === quizQuestions.length - 1) {
+                document.getElementById('btn-finish').style.display = 'inline-block';
+            } else {
+                document.getElementById('btn-next').style.display = 'inline-block';
+            }
+        }
+
+        function nextQuestion() {
+            if (currentIdx < quizQuestions.length - 1) {
+                currentIdx++;
+                showQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentIdx > 0) {
+                currentIdx--;
+                showQuestion();
+            }
+        }
+
+        function finishQuiz() {
+            updateScoreDisplay(); // Pastikan kalkulasi terakhir akurat sebelum menyimpan
+
+            const now = new Date();
+            const timeString = now.toLocaleDateString('id-ID') + ' ' + now.toLocaleTimeString('id-ID');
+
+            const sessionData = {
+                name: studentData.name,
+                class: studentData.class,
+                score: score,
+                quiz_id: QUIZ_ID, // Identitas kuis
+                time: timeString
+            };
+
+            // Simpan riwayat di halaman ini secara utuh
+            const history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            history.unshift(sessionData); // Tambah di paling atas
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+
+            // ==========================================
+            // KOMUNIKASI DENGAN FILE rekap.html 
+            // ==========================================
+            
+            // Metode 1: Simpan ke Global LocalStorage
+            let sharedRekap = JSON.parse(localStorage.getItem("global_rekap_skor")) || [];
+            sharedRekap.unshift(sessionData);
+            localStorage.setItem("global_rekap_skor", JSON.stringify(sharedRekap));
+
+            // Metode 2: Menggunakan postMessage jika ini adalah Iframe
+            const messagePayload = {
+                type: 'QUIZ_SUBMITTED',
+                payload: sessionData
+            };
+            if (window.opener) {
+                window.opener.postMessage(messagePayload, '*');
+            } else if (window.parent !== window) {
+                window.parent.postMessage(messagePayload, '*');
+            }
+
+            alert(`Selamat ${studentData.name}! Kuis selesai.\nSkor Akhir kamu: ${score}`);
+            
+            // Reset Layar
+            document.getElementById('student-name').value = '';
+            document.getElementById('student-class').value = '';
+            document.getElementById('quiz-screen').style.display = 'none';
+            document.getElementById('login-screen').style.display = 'block';
+            
+            loadHistory();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis STS Matematika Kelas 4</title>
+    <style>
+        /* CSS & Styling Umum */
+        :root {
+            --primary: #4CAF50;
+            --secondary: #FFC107;
+            --dark: #2c3e50;
+            --light: #f9f9f9;
+            --danger: #e74c3c;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            user-select: none; /* Proteksi Copy Paste */
+        }
+
+        .header {
+            background-color: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            width: 100%;
+            max-width: 700px;
+        }
+
+        /* Login Screen */
+        .login-screen {
+            text-align: center;
+        }
+        
+        .login-screen h2 {
+            color: var(--dark);
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: var(--dark);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: 0.3s;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-home {
+            background-color: var(--dark);
+            display: block;
+            width: 100%;
+            text-decoration: none;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+
+        /* Quiz Screen */
+        .quiz-screen, .result-screen {
+            display: none;
+        }
+
+        .question-img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .option-btn {
+            background-color: var(--light);
+            border: 2px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: 0.2s;
+        }
+
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+
+        .option-btn.correct {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .option-btn.wrong {
+            background-color: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+
+        .explanation {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e3f2fd;
+            border-left: 5px solid #2196f3;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+
+        .score-display {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--dark);
+            text-align: right;
+            margin-bottom: 15px;
+        }
+
+        /* History */
+        .history-section {
+            margin-top: 30px;
+            border-top: 2px solid #ddd;
+            padding-top: 20px;
+            text-align: left;
+        }
+
+        .history-item {
+            background: #f1f1f1;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        .footer {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9rem;
+            margin-top: auto;
+        }
+
+        .footer a {
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        Kode Soal: MTK-STS-K4-S2-HOTS
+    </div>
+
+    <div class="container">
+        <div class="card login-screen" id="loginScreen">
+            <a href="../index.html" class="btn btn-home">🏠 Kembali ke Home</a>
+            
+            <h2>Mulai Ujian STS</h2>
+            <div class="input-group">
+                <label for="namaSiswa">Nama Lengkap</label>
+                <input type="text" id="namaSiswa" placeholder="Masukkan nama lengkap..." autocomplete="off">
+            </div>
+            <div class="input-group">
+                <label for="kelasSiswa">Kelas</label>
+                <input type="text" id="kelasSiswa" placeholder="Masukkan kelas..." autocomplete="off">
+            </div>
+            <button class="btn" style="width: 100%;" onclick="startQuiz()">Mulai Kuis</button>
+
+            <div class="history-section">
+                <h3>Riwayat Skor (MTK-STS-K4-S2-HOTS)</h3>
+                <div id="historyList">Belum ada riwayat pengerjaan.</div>
+            </div>
+        </div>
+
+        <div class="card quiz-screen" id="quizScreen">
+            <div class="score-display">Skor Sementara: <span id="tempScore">0</span></div>
+            <h3 id="questionText">Pertanyaan</h3>
+            <img id="questionImage" class="question-img" src="" alt="Gambar Soal" style="display: none;">
+            
+            <div class="options" id="optionsContainer">
+                </div>
+
+            <div class="explanation" id="explanationBox">
+                <strong>Pembahasan:</strong> <span id="explanationText"></span>
+            </div>
+
+            <div class="nav-buttons">
+                <button class="btn" id="btnPrev" onclick="prevQuestion()" style="background-color: #7f8c8d;">Soal Sebelumnya</button>
+                <button class="btn" id="btnNext" onclick="nextQuestion()">Soal Selanjutnya</button>
+            </div>
+        </div>
+
+        <div class="card result-screen" id="resultScreen">
+            <h2>Kuis Selesai!</h2>
+            <p>Terima kasih telah mengerjakan, <span id="resultName"></span>.</p>
+            <h1 style="font-size: 4rem; color: var(--primary);" id="finalScore">100</h1>
+            <button class="btn" onclick="location.reload()">Selesai</button>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Dibuat dengan ❤️ untuk generasi cerdas bangsa.</p>
+        <p>Produk Edukasi Interaktif | <a href="https://lynk.id/smartbanksoal" target="_blank">SmartBankSoal - Dwi Endrasto</a></p>
+    </div>
+
+    <script>
+        // --- 1. PROTEKSI KEAMANAN ---
+        // Proteksi Klik Kanan
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        
+        // Proteksi Shortcut Copy Paste
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && (e.key === 'c' || e.key === 'v' || e.key === 'u' || e.key === 's' || e.key === 'p')) {
+                e.preventDefault();
+            }
+        });
+
+        // --- 2. DATA SOAL (25 Soal Sesuai Kisi-kisi) ---
+        // Jumlah kata tiap opsi dibuat sama untuk trik pilihan jawaban.
+        const originalQuestions = [
+            // 5 SOAL BERGAMBAR
+            {
+                img: "gambar/gambar1_luas_buku.jpg",
+                alt: "Gambar meja yang permukaannya ditutupi oleh 12 buku tulis yang disusun rapi.",
+                text: "Perhatikan gambar meja di atas. Jika diukur menggunakan satuan tidak baku berupa buku tulis, berapakah perkiraan luas permukaan meja tersebut?",
+                options: ["Dua belas buku", "Tiga belas buku", "Lima belas buku", "Satu belas buku"],
+                answer: "Dua belas buku",
+                explanation: "Tampak pada gambar, permukaan meja tertutup rapat oleh susunan buku sebanyak 3 baris dan 4 kolom (3x4 = 12 buku).",
+                indikator: "4.1 Mengukur luas satuan tidak baku"
+            },
+            {
+                img: "gambar/gambar2_volume_gelas.jpg",
+                alt: "Gambar 1 teko air yang menuangkan air hingga memenuhi tepat 8 gelas kecil berukuran sama.",
+                text: "Satu buah teko dapat mengisi beberapa gelas seperti pada gambar. Berapakah volume teko tersebut dalam satuan gelas?",
+                options: ["Tujuh buah gelas", "Enam buah gelas", "Delapan buah gelas", "Sembilan buah gelas"],
+                answer: "Delapan buah gelas",
+                explanation: "Berdasarkan gambar, seluruh air dalam teko habis setelah dituangkan ke dalam 8 gelas yang berukuran sama.",
+                indikator: "4.4 Mengestimasi volume satuan tidak baku"
+            },
+            {
+                img: "gambar/gambar3_bangun_komposisi.jpg",
+                alt: "Gambar rumah-rumahan yang dibentuk dari susunan persegi, persegi panjang, dan segitiga.",
+                text: "Bangun datar apakah yang TIDAK terdapat pada susunan komposisi gambar rumah-rumahan di atas?",
+                options: ["Bentuk lingkaran", "Bentuk segitiga", "Bentuk segiempat", "Bentuk persegipanjang"],
+                answer: "Bentuk lingkaran",
+                explanation: "Atap berbentuk segitiga, dinding segiempat/persegi, jendela persegi, namun tidak ada bangun berbentuk lingkaran.",
+                indikator: "5.3 Mengurai (dekomposisi) bangun datar"
+            },
+            {
+                img: "gambar/gambar4_luas_persegi_satuan.jpg",
+                alt: "Gambar bangun datar tidak beraturan pada kertas berpetak yang menempati 15 kotak penuh dan 4 kotak setengah.",
+                text: "Berapakah estimasi luas bangun datar pada gambar di atas jika dihitung menggunakan persegi satuan?",
+                options: ["Tujuh belas persegi", "Enam belas persegi", "Lima belas persegi", "Delapan belas persegi"],
+                answer: "Tujuh belas persegi",
+                explanation: "Ada 15 kotak penuh dan 4 kotak setengah (setara 2 kotak penuh). Total = 15 + 2 = 17 persegi satuan.",
+                indikator: "4.2 Mengestimasi luas dengan satuan persegi"
+            },
+            {
+                img: "gambar/gambar5_volume_kubus.jpg",
+                alt: "Gambar bangun ruang yang disusun dari tumpukan kubus satuan berukuran 3x3x2.",
+                text: "Tentukan volume bangun pada gambar tersebut jika dihitung dengan menggunakan kubus satuan baku yang tampak!",
+                options: ["Delapan belas kubus", "Tujuh belas kubus", "Enam belas kubus", "Sembilan belas kubus"],
+                answer: "Delapan belas kubus",
+                explanation: "Bangun memiliki panjang 3 kubus, lebar 3 kubus, dan tinggi 2 kubus. Volume = 3 x 3 x 2 = 18 kubus satuan.",
+                indikator: "4.4 Mengukur volume menggunakan satuan baku"
+            },
+            // 20 SOAL TEKS (Ubah Benar/Salah & Menjodohkan jadi Pilihan Ganda sesuai instruksi)
+            {
+                text: "Sebuah papan tulis akan diukur luasnya menggunakan jengkal tangan Andi. Pengukuran ini termasuk ke dalam jenis pengukuran menggunakan satuan...",
+                options: ["Sangat baku", "Tidak baku", "Paling baku", "Lebih baku"],
+                answer: "Tidak baku",
+                explanation: "Jengkal tangan setiap orang berbeda-beda, sehingga tidak dapat dijadikan standar yang tetap. Ini disebut satuan tidak baku.",
+                indikator: "4.1 Mengukur luas satuan tidak baku"
+            },
+            {
+                text: "Ibu memiliki wadah air berbentuk kotak. Wadah tersebut dapat memuat tepat 5 gayung air. Angka 5 pada kasus ini menunjukkan sebuah besaran...",
+                options: ["Satuan luas", "Satuan berat", "Satuan volume", "Satuan jarak"],
+                answer: "Satuan volume",
+                explanation: "Kapasitas atau ruang yang dapat diisi oleh air (menggunakan gayung) adalah pengertian dari perhitungan volume.",
+                indikator: "4.3 Mengukur volume"
+            },
+            {
+                text: "Bangun datar ini memiliki 4 sisi yang sama panjang dan 4 sudut siku-siku. Bangun datar yang dideskripsikan oleh ciri-ciri tersebut adalah bangun...",
+                options: ["Bangun persegi", "Bangun belahketupat", "Bangun layanglayang", "Bangun persegipanjang"],
+                answer: "Bangun persegi",
+                explanation: "Ciri utama persegi adalah keempat sisinya kongruen (sama panjang) dan keempat sudutnya masing-masing bernilai 90 derajat.",
+                indikator: "5.1 Mendeskripsikan ciri bangun datar"
+            },
+            {
+                text: "Dua buah bangun segitiga siku-siku yang sama besar jika digabungkan pada sisi miringnya akan membentuk sebuah komposisi bangun datar...",
+                options: ["Bentuk lingkaran", "Bentuk jajargenjang", "Bentuk trapesium", "Bentuk persegipanjang"],
+                answer: "Bentuk persegipanjang",
+                explanation: "Dua segitiga siku-siku identik yang disatukan tepat pada sisi terpanjangnya (hipotenusa) akan membentuk persegi panjang.",
+                indikator: "5.2 Menyusun (komposisi) bangun datar"
+            },
+            {
+                text: "Sebuah lapangan berbentuk persegi panjang akan dipasangi ubin berukuran 1 meter persegi. Metode ini merupakan proses menghitung luas dengan satuan...",
+                options: ["Satuan baku", "Satuan bebas", "Satuan ganda", "Satuan acak"],
+                answer: "Satuan baku",
+                explanation: "Ubin berukuran 1 meter persegi (m²) merupakan satuan standar ukuran internasional yang tetap, disebut satuan baku.",
+                indikator: "4.1 Mengukur luas satuan baku"
+            },
+            {
+                text: "Budi mengukur volume sebuah ember menggunakan gelas plastik. Ternyata dibutuhkan 20 gelas. Gelas plastik dalam hal ini berfungsi sebagai...",
+                options: ["Alat baku", "Alat ukur", "Alat tulis", "Alat berat"],
+                answer: "Alat ukur",
+                explanation: "Gelas plastik digunakan sebagai patokan atau takaran untuk mengetahui kapasitas volume ember (alat ukur tak baku).",
+                indikator: "4.4 Mengestimasi volume"
+            },
+            {
+                text: "Sebuah segibanyak beraturan memiliki ciri yaitu semua sisinya sama panjang. Selain sisi, bagian mana lagi yang ukurannya pasti sama besar?",
+                options: ["Semua sudutnya", "Semua warnanya", "Semua garisnya", "Semua beratnya"],
+                answer: "Semua sudutnya",
+                explanation: "Syarat sebuah bangun datar disebut segibanyak beraturan adalah sisi-sisinya sama panjang dan sudut-sudut dalamnya sama besar.",
+                indikator: "5.1 Mendeskripsikan segibanyak"
+            },
+            {
+                text: "Sebuah layang-layang dapat diuraikan (dekomposisi) menjadi minimal beberapa bangun datar yang lebih sederhana. Bangun pembentuk layang-layang adalah...",
+                options: ["Dua segitiga", "Dua lingkaran", "Dua trapesium", "Dua segilima"],
+                answer: "Dua segitiga",
+                explanation: "Jika ditarik garis diagonal horizontal maupun vertikal, layang-layang dapat terbagi menjadi dua buah segitiga.",
+                indikator: "5.3 Mengurai (dekomposisi)"
+            },
+            {
+                text: "Kapasitas botol minum Dina adalah 500 mililiter. Mililiter merupakan satuan yang biasa digunakan dalam pengukuran matematika untuk menentukan besaran...",
+                options: ["Besar sudut", "Panjang sisi", "Volume benda", "Luas wilayah"],
+                answer: "Volume benda",
+                explanation: "Mililiter (ml) adalah turunan dari liter, yang merupakan standar satuan baku untuk mengukur kapasitas ruang/volume cairan.",
+                indikator: "4.3 Mengukur volume satuan baku"
+            },
+            {
+                text: "Permukaan buku tulis berbentuk persegi panjang. Jika dipotong secara diagonal dari ujung ke ujung, kita akan mendapatkan dekomposisi berupa...",
+                options: ["Dua persegi", "Dua segitiga", "Dua lingkaran", "Dua jajargenjang"],
+                answer: "Dua segitiga",
+                explanation: "Garis diagonal pada persegi panjang membelah bangun tersebut menjadi dua segitiga siku-siku yang kongruen.",
+                indikator: "5.3 Mengurai bangun datar"
+            },
+            {
+                text: "Andi mengestimasi luas meja dengan menutupnya menggunakan telapak tangan. Telapak tangan setiap teman Andi ukurannya berbeda. Ini menunjukkan bahwa telapak tangan adalah...",
+                options: ["Satuan baku", "Satuan ukur", "Satuan pas", "Satuan takbaku"], // 2 words
+                answer: "Satuan takbaku",
+                explanation: "Alat ukur yang nilainya bisa berbeda jika dilakukan oleh orang yang berbeda disebut sebagai alat ukur satuan tidak baku.",
+                indikator: "4.2 Mengestimasi luas satuan tidak baku"
+            },
+            {
+                text: "Sebuah bangun datar memiliki 3 titik sudut dan 3 buah sisi. Jumlah ketiga sudut dalamnya selalu 180 derajat. Bangun ini adalah...",
+                options: ["Bangun segitiga", "Bangun segiempat", "Bangun segilima", "Bangun segienam"],
+                answer: "Bangun segitiga",
+                explanation: "Bangun datar yang dibatasi oleh tiga buah sisi dan memiliki tiga buah sudut disebut segitiga.",
+                indikator: "5.1 Mendeskripsikan ciri bangun datar"
+            },
+            {
+                text: "Kita dapat menyusun beberapa bangun persegi menjadi sebuah bangun datar yang baru. Jika kita menyusun 4 persegi secara mendatar, terbentuklah bangun...",
+                options: ["Bentuk persegipanjang", "Bentuk jajargenjang", "Bentuk belahketupat", "Bentuk layanglayang"],
+                answer: "Bentuk persegipanjang",
+                explanation: "Persegi yang dijejerkan secara horizontal akan membentuk bangun yang lebih panjang namun lebarnya tetap, yaitu persegi panjang.",
+                indikator: "5.2 Menyusun (komposisi) bangun datar"
+            },
+            {
+                text: "Botol A berisi 1 liter air. Botol B berisi 3 gelas air. Kita tidak bisa langsung membandingkan keduanya secara pasti karena pengukuran botol B...",
+                options: ["Kurang banyak", "Sangat akurat", "Tidak baku", "Terlalu baku"],
+                answer: "Tidak baku",
+                explanation: "Gelas adalah satuan tidak baku yang ukurannya belum tentu seragam, sedangkan liter adalah satuan baku internasional.",
+                indikator: "4.4 Mengestimasi volume"
+            },
+            {
+                text: "Manakah di antara pernyataan berikut yang merupakan ciri khusus dari sebuah bangun trapesium sama kaki yang membedakannya dari bangun jajargenjang?",
+                options: ["Sisi sejajar", "Sudut siku", "Sisi miring", "Kaki sejajar"], // 2 words
+                answer: "Sisi miring",
+                explanation: "Trapesium sama kaki memiliki sepasang sisi sejajar dan dua sisi miring (kaki) yang sama panjang, tidak seperti jajargenjang.",
+                indikator: "5.1 Mendeskripsikan bangun datar"
+            },
+            {
+                text: "Sebuah bak mandi memiliki volume 500 liter. Jika air dikuras menggunakan ember bervolume 10 liter, berapa kali ember digunakan untuk menguras habis?",
+                options: ["Lima puluh", "Tiga puluh", "Empat puluh", "Enam puluh"],
+                answer: "Lima puluh",
+                explanation: "Volume total dibagi volume ember: 500 liter / 10 liter = 50 kali pengurasan.",
+                indikator: "4.3 Mengukur volume"
+            },
+            {
+                text: "Bangun segi enam beraturan (heksagon) dapat diuraikan (didekomposisi) secara simetris menjadi beberapa segitiga yang sama persis. Berapa jumlah maksimal segitiga tersebut?",
+                options: ["Enam segitiga", "Lima segitiga", "Tujuh segitiga", "Delapan segitiga"],
+                answer: "Enam segitiga",
+                explanation: "Dengan menarik garis dari titik tengah ke seluruh titik sudutnya, segi enam beraturan tersusun dari 6 segitiga sama sisi.",
+                indikator: "5.3 Mengurai bangun datar"
+            },
+            {
+                text: "Saat mengukur luas buku menggunakan uang logam, ternyata terdapat celah kosong antar logam. Hal ini membuktikan bahwa uang logam untuk mengukur luas...",
+                options: ["Sangat akurat", "Lebih akurat", "Kurang akurat", "Paling akurat"],
+                answer: "Kurang akurat",
+                explanation: "Benda berbentuk lingkaran tidak bisa menutupi permukaan datar secara rapat sempurna, sehingga estimasi luasnya kurang presisi.",
+                indikator: "4.2 Mengestimasi luas satuan tidak baku"
+            },
+            {
+                text: "Jika kamu menggabungkan dua bangun layang-layang yang sama persis pada salah satu sisi terpendeknya, bentuk luar bangun yang mungkin tercipta menyerupai bangun...",
+                options: ["Bentuk segilima", "Bentuk segienam", "Bentuk segitiga", "Bentuk segiempat"],
+                answer: "Bentuk segienam",
+                explanation: "Dua layang-layang (4 sisi) yang direkatkan di satu sisi akan mengurangi jumlah sisi luar, membentuk poligon dengan 6 sisi luar.",
+                indikator: "5.2 Menyusun komposisi bangun datar"
+            },
+            {
+                text: "Sebuah lapangan luasnya 100 meter persegi. Istilah 'meter persegi' menunjukkan bahwa kita sedang membicarakan dimensi ruang yang diukur dalam konteks besaran...",
+                options: ["Panjang garis", "Luas bidang", "Tinggi bangun", "Berat beban"],
+                answer: "Luas bidang",
+                explanation: "Satuan persegi (pangkat dua) seperti meter persegi secara khusus dan baku selalu digunakan untuk mengukur besaran luasan suatu bidang dua dimensi.",
+                indikator: "4.1 Mengukur luas satuan baku"
+            }
+        ];
+
+        // --- 3. VARIABEL SISTEM KUIS ---
+        const KODE_SOAL = "MTK-STS-K4-S2-HOTS";
+        const STORAGE_KEY = "history_" + KODE_SOAL;
+        
+        // 1. Reset Variabel Secara Menyeluruh (Mencegah skor > 100)
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let correctAnswers = 0;
+        let studentName = "";
+        let studentClass = "";
+        let userAnswers = {};
+
+        // --- 4. LOGIC APLIKASI ---
+
+        // Fungsi Acak Array (Fisher-Yates)
+        function shuffleArray(array) {
+            let curId = array.length;
+            while (0 !== curId) {
+                let randId = Math.floor(Math.random() * curId);
+                curId -= 1;
+                let tmp = array[curId];
+                array[curId] = array[randId];
+                array[randId] = tmp;
+            }
+            return array;
+        }
+
+        // Tampilkan Riwayat di Login
+        function renderHistory() {
+            const historyList = document.getElementById("historyList");
+            const data = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            if(data.length === 0) {
+                historyList.innerHTML = "<p>Belum ada riwayat pengerjaan.</p>";
+            } else {
+                historyList.innerHTML = data.map(item => 
+                    `<div class="history-item">
+                        <strong>${item.nama} (${item.kelas})</strong> - Skor: ${item.skor} <br>
+                        <small>Waktu: ${item.waktu}</small>
+                    </div>`
+                ).join('');
+            }
+        }
+
+        // Jalankan saat load
+        window.onload = renderHistory;
+
+        function startQuiz() {
+            studentName = document.getElementById("namaSiswa").value.trim();
+            studentClass = document.getElementById("kelasSiswa").value.trim();
+
+            if(!studentName || !studentClass) {
+                alert("Harap isi Nama dan Kelas terlebih dahulu!");
+                return;
+            }
+
+            // Reset dan Acak Soal
+            currentQuestions = shuffleArray(JSON.parse(JSON.stringify(originalQuestions)));
+            currentQuestionIndex = 0;
+            correctAnswers = 0;
+            userAnswers = {};
+
+            document.getElementById("loginScreen").style.display = "none";
+            document.getElementById("quizScreen").style.display = "block";
+            
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = currentQuestions[currentQuestionIndex];
+            document.getElementById("questionText").innerText = `${currentQuestionIndex + 1}. ${q.text}`;
+            
+            // Handle Gambar
+            const imgEl = document.getElementById("questionImage");
+            if (q.img) {
+                imgEl.src = q.img;
+                imgEl.alt = q.alt;
+                imgEl.style.display = "block";
+            } else {
+                imgEl.style.display = "none";
+            }
+
+            // Handle Opsi (Acak opsi per soal)
+            const optionsContainer = document.getElementById("optionsContainer");
+            optionsContainer.innerHTML = "";
+            document.getElementById("explanationBox").style.display = "none";
+            
+            let shuffledOptions = shuffleArray([...q.options]);
+
+            shuffledOptions.forEach((opt) => {
+                const btn = document.createElement("button");
+                btn.className = "option-btn";
+                btn.innerText = opt;
+                btn.onclick = () => selectAnswer(btn, opt, q.answer, q.explanation);
+                optionsContainer.appendChild(btn);
+            });
+
+            // Restore state jika sudah pernah dijawab (untuk tombol prev/next)
+            if (userAnswers[currentQuestionIndex]) {
+                const savedAns = userAnswers[currentQuestionIndex];
+                const btns = optionsContainer.getElementsByClassName("option-btn");
+                for (let b of btns) {
+                    b.disabled = true;
+                    if (b.innerText === q.answer) b.classList.add("correct");
+                    if (b.innerText === savedAns && savedAns !== q.answer) b.classList.add("wrong");
+                }
+                document.getElementById("explanationText").innerText = q.explanation;
+                document.getElementById("explanationBox").style.display = "block";
+            }
+
+            updateScoreDisplay();
+            document.getElementById("btnPrev").style.display = currentQuestionIndex === 0 ? "none" : "inline-block";
+            document.getElementById("btnNext").innerText = currentQuestionIndex === currentQuestions.length - 1 ? "Selesai & Simpan" : "Soal Selanjutnya";
+        }
+
+        function selectAnswer(btnElement, selectedOpt, correctOpt, explanation) {
+            const qIndex = currentQuestionIndex;
+            
+            // Catat jawaban
+            userAnswers[qIndex] = selectedOpt;
+            if(selectedOpt === correctOpt) {
+                correctAnswers++;
+                btnElement.classList.add("correct");
+            } else {
+                btnElement.classList.add("wrong");
+                // Cari dan warnai hijau tombol yang benar
+                const btns = document.getElementById("optionsContainer").getElementsByClassName("option-btn");
+                for(let b of btns) {
+                    if(b.innerText === correctOpt) b.classList.add("correct");
+                }
+            }
+
+            // Disable semua opsi
+            const btns = document.getElementById("optionsContainer").getElementsByClassName("option-btn");
+            for(let b of btns) b.disabled = true;
+
+            // Tampilkan pembahasan
+            document.getElementById("explanationText").innerText = explanation;
+            document.getElementById("explanationBox").style.display = "block";
+
+            updateScoreDisplay();
+        }
+
+        function updateScoreDisplay() {
+            // 2 & 4. Fungsi Pembatas dan Perhitungan Berbasis Persentase
+            let maxTotal = currentQuestions.length;
+            let percentScore = (correctAnswers / maxTotal) * 100;
+            // 3. Limiter agar absolut tidak lebih dari 100
+            let finalTempScore = Math.min(100, Math.round(percentScore));
+            document.getElementById("tempScore").innerText = finalTempScore;
+        }
+
+        function nextQuestion() {
+            if(!userAnswers.hasOwnProperty(currentQuestionIndex)) {
+                alert("Silakan pilih jawaban terlebih dahulu!");
+                return;
+            }
+
+            if(currentQuestionIndex < currentQuestions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function prevQuestion() {
+            if(currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+            }
+        }
+
+        function finishQuiz() {
+            let maxTotal = currentQuestions.length;
+            // Sistem Penilaian Persentase & Limiter max 100
+            let finalScore = Math.min(100, Math.round((correctAnswers / maxTotal) * 100));
+
+            // Simpan ke LocalStorage spesifik kode soal
+            let historyData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            let now = new Date();
+            let timestamp = now.toLocaleDateString('id-ID') + " " + now.toLocaleTimeString('id-ID');
+            
+            let record = {
+                nama: studentName,
+                kelas: studentClass,
+                skor: finalScore,
+                waktu: timestamp
+            };
+            
+            historyData.push(record);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(historyData));
+
+            // Komunikasi dengan rekap.html via LocalStorage (Bisa dibaca di rekap.html)
+            // Atau via postMessage jika di-iframe
+            if(window.parent !== window) {
+                window.parent.postMessage({ type: "QUIZ_RESULT", data: record }, "*");
+            }
+
+            // Tampilkan layar hasil
+            document.getElementById("quizScreen").style.display = "none";
+            document.getElementById("resultScreen").style.display = "block";
+            document.getElementById("resultName").innerText = studentName;
+            document.getElementById("finalScore").innerText = finalScore;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBankSoal - Kuis Interaktif</title>
+    <style>
+        /* Desain Umum & Anti Copy Paste */
+        :root {
+            --primary: #4A90E2;
+            --secondary: #FFC107;
+            --dark: #2C3E50;
+            --light: #F9F9F9;
+            --success: #4CAF50;
+            --danger: #F44336;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+            color: #333;
+            user-select: none; /* Anti Copy Paste */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        main {
+            flex: 1;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h2 { color: var(--dark); text-align: center; }
+        
+        /* Form & Input */
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0 20px 0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+        input[type="text"]:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        /* Buttons */
+        button, .btn-link {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            transition: transform 0.2s, background 0.3s;
+        }
+        button:hover, .btn-link:hover { transform: scale(1.02); }
+        .btn-home {
+            background-color: var(--dark);
+            width: 100%;
+            margin-bottom: 15px;
+        }
+        .btn-start { background-color: var(--secondary); color: var(--dark); width: 100%; }
+        .btn-nav { background-color: var(--dark); margin: 5px; }
+        
+        /* Quiz Elements */
+        .option-btn {
+            display: block;
+            width: 100%;
+            text-align: left;
+            margin: 10px 0;
+            background: #f1f1f1;
+            color: #333;
+            border: 2px solid #ddd;
+        }
+        .option-btn:hover { background: #e2e2e2; }
+        .correct { background-color: var(--success) !important; color: white !important; border-color: var(--success) !important; }
+        .wrong { background-color: var(--danger) !important; color: white !important; border-color: var(--danger) !important; }
+        
+        .image-container { text-align: center; margin-bottom: 15px; }
+        .image-container img { max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        
+        /* Dictionary / Kamus Kecil Area */
+        .vocab-container {
+            background: #fff3cd;
+            border-left: 5px solid var(--secondary);
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            color: #856404;
+        }
+        .vocab-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        .vocab-list {
+            list-style-type: none;
+            padding-left: 0;
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .vocab-list li {
+            background: rgba(255, 255, 255, 0.7);
+            padding: 4px 10px;
+            border-radius: 12px;
+            border: 1px solid #ffeeba;
+            font-size: 0.85rem;
+        }
+
+        .discussion {
+            background: #e8f4fd;
+            border-left: 5px solid var(--primary);
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .score-display {
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        /* History Table */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: var(--primary); color: white; }
+        
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 12px;
+            font-size: 0.9rem;
+            margin-top: auto;
+        }
+        
+        /* Hidden Class */
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body oncontextmenu="return false;" oncopy="return false;" oncut="return false;" onpaste="return false;">
+
+    <header id="header">
+        Kode Soal: ENG-STS-K4-S2-HOTS
+    </header>
+
+    <main>
+        <section id="login-screen" class="card">
+            <h2>Selamat Datang di SmartBankSoal</h2>
+            
+            <a href="../index.html" class="btn-link btn-home">Kembali ke Home</a>
+            
+            <label for="studentName">Nama Lengkap:</label>
+            <input type="text" id="studentName" placeholder="Masukkan nama lengkap Anda" required>
+            
+            <label for="studentClass">Kelas:</label>
+            <input type="text" id="studentClass" placeholder="Masukkan kelas Anda" required>
+            
+            <button class="btn-start" onclick="startQuiz()">Mulai Kuis</button>
+            
+            <h3 style="margin-top: 30px;">Riwayat Skor</h3>
+            <div id="history-container">
+                <table id="historyTable">
+                    <thead>
+                        <tr>
+                            <th>Nama</th>
+                            <th>Kelas</th>
+                            <th>Waktu</th>
+                            <th>Skor</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyBody">
+                        </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="quiz-screen" class="card hidden">
+            <div class="score-display">Skor Sementara: <span id="currentScore">0</span></div>
+            <h3 id="question-number">Soal 1/25</h3>
+
+            <div id="vocab-area" class="vocab-container hidden">
+                <div class="vocab-title">📚 Kamus Kecil:</div>
+                <ul id="vocab-list" class="vocab-list"></ul>
+            </div>
+            
+            <div id="image-area" class="image-container hidden">
+                <img id="question-img" src="" alt="">
+            </div>
+            
+            <p id="question-text" style="font-size: 1.1rem; font-weight: bold;"></p>
+            
+            <div id="options-area">
+                </div>
+            
+            <div id="discussion-area" class="discussion">
+                <strong>Pembahasan:</strong> <span id="discussion-text"></span>
+            </div>
+            
+            <div style="text-align: center; margin-top: 20px;">
+                <button id="btn-prev" class="btn-nav hidden" onclick="prevQuestion()">Soal Sebelumnya</button>
+                <button id="btn-next" class="btn-nav hidden" onclick="nextQuestion()">Soal Selanjutnya</button>
+                <button id="btn-finish" class="btn-nav hidden" onclick="finishQuiz()">Selesai Kuis</button>
+            </div>
+        </section>
+
+        <section id="result-screen" class="card hidden">
+            <h2>Kuis Selesai!</h2>
+            <p style="text-align: center; font-size: 1.2rem;">Skor Akhir Anda:</p>
+            <h1 style="text-align: center; color: var(--primary); font-size: 4rem; margin: 10px 0;" id="finalScore">100</h1>
+            <button class="btn-home" onclick="location.reload()" style="margin-top: 20px;">Kembali ke Halaman Awal</button>
+        </section>
+    </main>
+
+    <footer>
+        Dibuat dengan ❤️ untuk generasi cerdas bangsa.<br>
+        Oleh : Dwi Endrasto
+    </footer>
+
+    <script>
+        // --- KONFIGURASI KUIS & KEAMANAN ---
+        const KODE_SOAL = "ENG-STS-K4-S2-HOTS"; 
+        
+        // --- DATA SOAL + KAMUS KECIL (Vocabulary) ---
+        const originalQuestions = [
+            {
+                text: "Look at the image. It is raining outside and the boy is hungry. What can he do in the kitchen?",
+                img: "gambar/q1_kitchen.jpg", 
+                imgAlt: "Gambar seorang anak laki-laki di dapur sedang memegang wajan", 
+                options: ["He can cook.", "He can read.", "He can jump.", "He can sing."],
+                correct: 0,
+                discussion: "Dapur adalah tempat untuk memasak (cook). Karena ia lapar, aktivitas yang tepat adalah 'He can cook'.",
+                vocabulary: ["Look = Lihat", "Image = Gambar", "Boy = Anak laki-laki", "Can = Bisa/Dapat", "Do = Melakukan", "Rain = Hujan", "Outside = Di luar", "Hungry = Lapar", "Kitchen = Dapur", "Cook = Memasak"]
+            },
+            {
+                text: "The school bell rings at seven. The clock shows half past six. What should he do?",
+                img: "gambar/q2_clock.jpg",
+                imgAlt: "Gambar jam dinding analog menunjukkan pukul 06:30",
+                options: ["Go to school.", "Stay in bed.", "Play some games.", "Sleep a little."],
+                correct: 0,
+                discussion: "Waktu menunjukkan 06:30, setengah jam sebelum bel sekolah (07:00). Ia harus segera berangkat sekolah (Go to school).",
+                vocabulary: ["Show = Menunjukkan", "Past = Lewat", "What = Apa", "Should = Seharusnya", "Do = Melakukan", "Bell = Bel", "Ring = Berdering", "Clock = Jam dinding", "Half = Setengah", "School = Sekolah"]
+            },
+            {
+                text: "The girl is doing a routine. Look at the window. When does she usually do this activity?",
+                img: "gambar/q3_brush.jpg",
+                imgAlt: "Gambar anak perempuan menyikat gigi dengan latar jendela malam hari ada bulan",
+                options: ["Bedtime", "Morning", "Afternoon", "Midday"],
+                correct: 0,
+                discussion: "Terdapat bulan di luar jendela, menandakan malam hari sebelum tidur (Bedtime).",
+                vocabulary: ["Girl = Anak perempuan", "Look = Lihat", "When = Kapan", "Do = Melakukan", "This = Ini", "Routine = Rutinitas", "Window = Jendela", "Usually = Biasanya", "Activity = Kegiatan", "Bedtime = Waktu tidur"]
+            },
+            {
+                text: "Mother just finished cooking and eating. What can she do next in the kitchen?",
+                img: "gambar/q4_sink.jpg",
+                imgAlt: "Gambar wastafel dapur dengan piring-piring kotor",
+                options: ["Wash plates", "Cook food", "Sweep floor", "Drink water"],
+                correct: 0,
+                discussion: "Setelah makan dan memasak, piring kotor harus dicuci (Wash plates).",
+                vocabulary: ["Mother = Ibu", "Just = Baru saja", "Cooking = Memasak", "Eating = Makan", "Kitchen = Dapur", "Finish = Selesai", "Next = Selanjutnya", "Wash = Mencuci", "Plate = Piring", "Floor = Lantai"]
+            },
+            {
+                text: "Look at the clock and his activity. What will he probably do next?",
+                img: "gambar/q5_breakfast.jpg",
+                imgAlt: "Gambar anak laki-laki sedang sarapan pagi pada pukul 06:00",
+                options: ["Go to school.", "Go to bed.", "Go to park.", "Go to mall."],
+                correct: 0,
+                discussion: "Setelah sarapan pagi (06:00), rutinitas seorang siswa selanjutnya adalah pergi ke sekolah (Go to school).",
+                vocabulary: ["Look = Lihat", "Clock = Jam", "His = Miliknya (Laki-laki)", "Activity = Kegiatan", "Will = Akan", "Probably = Mungkin", "Next = Selanjutnya", "Breakfast = Sarapan", "Park = Taman", "School = Sekolah"]
+            },
+            {
+                text: "The living room floor is very dirty and dusty. What can you do to help?",
+                options: ["Sweep it", "Paint it", "Break it", "Dirty it"],
+                correct: 0, 
+                discussion: "Lantai yang kotor dan berdebu harus disapu (Sweep it).",
+                vocabulary: ["Very = Sangat", "What = Apa", "Can = Bisa", "You = Kamu", "Help = Membantu", "Living room = Ruang tamu", "Floor = Lantai", "Dirty = Kotor", "Dusty = Berdebu", "Sweep = Menyapu"]
+            },
+            {
+                text: "It is twelve o'clock in the afternoon. The sun is very bright. What activity is usually done at this time?",
+                options: ["Eat lunch", "Eat dinner", "Eat snacks", "Eat supper"],
+                correct: 0, 
+                discussion: "Jam dua belas siang adalah waktunya untuk makan siang (Eat lunch).",
+                vocabulary: ["Twelve = Dua belas", "O'clock = Tepat (jam)", "Very = Sangat", "Activity = Kegiatan", "Done = Dilakukan", "Afternoon = Siang/Sore", "Sun = Matahari", "Bright = Terang", "Usually = Biasanya", "Lunch = Makan siang"]
+            },
+            {
+                text: "You feel very sleepy and tired after playing all day. What should you do?",
+                options: ["Take rest", "Play outside", "Run fast", "Watch movies"],
+                correct: 0, 
+                discussion: "Jika mengantuk dan lelah, tindakan yang benar adalah beristirahat (Take rest).",
+                vocabulary: ["Feel = Merasa", "Very = Sangat", "All = Semua/Sepanjang", "Day = Hari", "Should = Seharusnya", "Sleepy = Mengantuk", "Tired = Lelah", "After = Setelah", "Play = Bermain", "Rest = Istirahat"]
+            },
+            {
+                text: "Your mother is sick and cannot make dinner. You are in the kitchen. What can you do?",
+                options: ["Cook soup", "Play games", "Watch videos", "Sleep deeply"],
+                correct: 0, 
+                discussion: "Untuk membantu ibu yang sakit, kamu bisa membuat masakan sederhana seperti sup (Cook soup) di dapur.",
+                vocabulary: ["Your = Milikmu", "Cannot = Tidak bisa", "Are = Ada/Adalah", "Kitchen = Dapur", "Do = Melakukan", "Sick = Sakit", "Make = Membuat", "Dinner = Makan malam", "Soup = Sup", "Deeply = Nyenyak"]
+            },
+            {
+                text: "The clock shows a quarter to seven. You need to be at school at seven. It takes thirty minutes to walk. What will happen?",
+                options: ["You are late", "You are early", "You are fast", "You are good"],
+                correct: 0, 
+                discussion: "06:45 ditambah 30 menit perjalanan menjadi 07:15. Kamu akan terlambat (You are late) karena masuk jam 07:00.",
+                vocabulary: ["Show = Menunjukkan", "School = Sekolah", "Take = Memakan waktu", "Thirty = Tiga puluh", "Minute = Menit", "Quarter = Seperempat", "Need = Perlu", "Walk = Berjalan", "Happen = Terjadi", "Late = Terlambat"]
+            },
+            {
+                text: "Every morning, Rio takes a towel and goes to the bathroom. What is his purpose?",
+                options: ["Take bath", "Wash clothes", "Drink water", "Clean shoes"],
+                correct: 0, 
+                discussion: "Membawa handuk ke kamar mandi di pagi hari bertujuan untuk mandi (Take bath).",
+                vocabulary: ["Every = Setiap", "Take = Mengambil", "Go = Pergi", "To = Ke", "His = Miliknya", "Morning = Pagi", "Towel = Handuk", "Bathroom = Kamar mandi", "Purpose = Tujuan", "Bath = Mandi"]
+            },
+            {
+                text: "Andi plays football at four o'clock. He finishes at five o'clock. How long does he play?",
+                options: ["One hour", "Two hours", "Three hours", "Four hours"],
+                correct: 0, 
+                discussion: "Dari jam 4 hingga jam 5 adalah durasi selama satu jam (One hour).",
+                vocabulary: ["At = Pada", "Four = Empat", "Five = Lima", "Does = (kata bantu)", "He = Dia (Laki-laki)", "Finish = Selesai", "How long = Berapa lama", "Hour = Jam (durasi)", "Play = Bermain", "Football = Sepak bola"]
+            },
+            {
+                text: "We have bread, jam, and cheese on the table. What can we make for breakfast?",
+                options: ["Sweet sandwich", "Chicken noodle", "Fried rice", "Hot pancake"],
+                correct: 0, 
+                discussion: "Bahan-bahan roti, selai, dan keju digunakan untuk membuat roti lapis (Sweet sandwich).",
+                vocabulary: ["Have = Memiliki/Ada", "Table = Meja", "What = Apa", "Can = Bisa", "For = Untuk", "Bread = Roti", "Jam = Selai", "Cheese = Keju", "Make = Membuat", "Breakfast = Sarapan"]
+            },
+            {
+                text: "After waking up, Sinta always makes her bed. Why does she do that?",
+                options: ["To keep tidy", "To make dirty", "To find toys", "To sleep again"],
+                correct: 0, 
+                discussion: "Merapikan tempat tidur bertujuan agar kamar tetap bersih dan rapi (To keep tidy).",
+                vocabulary: ["After = Setelah", "Always = Selalu", "Her = Miliknya", "Does = Melakukan", "That = Itu", "Wake up = Bangun tidur", "Make bed = Merapikan kasur", "Why = Mengapa", "Tidy = Rapi", "Find = Menemukan"]
+            },
+            {
+                text: "The English test is at half past eight. It is eight o'clock now. How many minutes left before the test?",
+                options: ["Thirty minutes", "Twenty minutes", "Forty minutes", "Fifty minutes"],
+                correct: 0, 
+                discussion: "Dari pukul 08:00 ke 08:30 (half past eight) memiliki selisih waktu 30 menit (Thirty minutes).",
+                vocabulary: ["English = Bahasa Inggris", "Eight = Delapan", "Now = Sekarang", "How many = Berapa banyak", "The = Itu (artikel)", "Test = Ujian", "Half past = Lewat setengah", "Left = Tersisa", "Minute = Menit", "Before = Sebelum"]
+            },
+            {
+                text: "The weather is hot and you are sweating. You are in the bathroom. What can you do?",
+                options: ["Take shower", "Wash dishes", "Read books", "Cook meals"],
+                correct: 0, 
+                discussion: "Saat cuaca panas dan berkeringat, aktivitas yang tepat di kamar mandi adalah mandi (Take shower).",
+                vocabulary: ["And = Dan", "Are = Ada/Adalah", "In = Di dalam", "What = Apa", "Do = Melakukan", "Weather = Cuaca", "Hot = Panas", "Sweating = Berkeringat", "Bathroom = Kamar mandi", "Shower = Mandi"]
+            },
+            {
+                text: "Budi never forgets to do his homework at seven in the evening. This shows that Budi is a...",
+                options: ["Diligent student", "Lazy student", "Bad student", "Naughty student"],
+                correct: 0, 
+                discussion: "Selalu mengerjakan PR tepat waktu menunjukkan Budi adalah siswa yang rajin (Diligent student).",
+                vocabulary: ["Never = Tidak pernah", "Do = Mengerjakan", "Seven = Tujuh", "This = Ini", "That = Bahwa", "Forget = Lupa", "Homework = PR", "Evening = Malam hari", "Show = Menunjukkan", "Diligent = Rajin"]
+            },
+            {
+                text: "A train arrives at ten fifteen. It leaves at ten thirty. How long does the train stop?",
+                options: ["Fifteen minutes", "Twenty minutes", "Thirty minutes", "Ten minutes"],
+                correct: 0, 
+                discussion: "10:30 dikurangi 10:15 adalah 15 menit (Fifteen minutes).",
+                vocabulary: ["Ten = Sepuluh", "Fifteen = Lima belas", "Thirty = Tiga puluh", "How = Berapa", "Does = (kata bantu)", "Train = Kereta api", "Arrive = Tiba", "Leave = Berangkat", "Stop = Berhenti", "Long = Lama"]
+            },
+            {
+                text: "You want to boil some water for tea. Which tool in the kitchen can you use?",
+                options: ["Stove", "Refrigerator", "Television", "Sofa"],
+                correct: 0, 
+                discussion: "Alat di dapur untuk merebus air adalah kompor (Stove).",
+                vocabulary: ["Want = Ingin", "Some = Sedikit", "Tea = Teh", "Which = Yang mana", "Use = Menggunakan", "Boil = Merebus", "Water = Air", "Tool = Alat", "Kitchen = Dapur", "Stove = Kompor"]
+            },
+            {
+                text: "Your uniform is dirty after playing football. What must you do before wearing it again?",
+                options: ["Wash it", "Iron it", "Burn it", "Sell it"],
+                correct: 0, 
+                discussion: "Seragam yang kotor harus dicuci (Wash it) sebelum bisa dipakai kembali.",
+                vocabulary: ["After = Setelah", "Playing = Bermain", "Football = Sepak bola", "Must = Harus", "Again = Lagi", "Uniform = Seragam", "Dirty = Kotor", "Before = Sebelum", "Wear = Memakai", "Wash = Mencuci"]
+            },
+            {
+                text: "The school ends at one o'clock. You walk home for thirty minutes. What time do you arrive home?",
+                options: ["One thirty", "Two thirty", "One fifteen", "Two fifteen"],
+                correct: 0, 
+                discussion: "Selesai jam 1:00 ditambah perjalanan 30 menit, maka akan tiba jam 1:30 (One thirty).",
+                vocabulary: ["School = Sekolah", "One = Satu", "For = Selama", "Thirty = Tiga puluh", "Minute = Menit", "End = Berakhir", "Walk = Berjalan", "Home = Rumah", "Arrive = Tiba", "Time = Waktu"]
+            },
+            {
+                text: "Guests are coming but the living room chairs are messy. What can you do?",
+                options: ["Arrange them", "Paint them", "Break them", "Hide them"],
+                correct: 0, 
+                discussion: "Kursi yang berantakan saat ada tamu harus ditata atau dirapikan kembali (Arrange them).",
+                vocabulary: ["Are = Adalah/Sedang", "But = Tetapi", "Living room = Ruang tamu", "What = Apa", "Do = Melakukan", "Guest = Tamu", "Come = Datang", "Chair = Kursi", "Messy = Berantakan", "Arrange = Menata/Merapikan"]
+            },
+            {
+                text: "Before eating dinner, we must wash our hands. Why is this important?",
+                options: ["Clean germs", "Waste water", "Play soap", "Make bubbles"],
+                correct: 0, 
+                discussion: "Mencuci tangan penting untuk membersihkan kuman (Clean germs) sebelum makan.",
+                vocabulary: ["Before = Sebelum", "Dinner = Makan malam", "We = Kita", "Must = Harus", "Hand = Tangan", "Eat = Makan", "Wash = Mencuci", "Important = Penting", "Germ = Kuman", "Soap = Sabun"]
+            },
+            {
+                text: "You start reading a book at six o'clock. You read for two hours. When do you stop?",
+                options: ["Eight o'clock", "Nine o'clock", "Ten o'clock", "Seven o'clock"],
+                correct: 0, 
+                discussion: "Jam 6 ditambah 2 jam adalah jam 8 (Eight o'clock).",
+                vocabulary: ["Book = Buku", "Six = Enam", "For = Selama", "Two = Dua", "You = Kamu", "Start = Mulai", "Read = Membaca", "Hour = Jam (durasi)", "When = Kapan", "Stop = Berhenti"]
+            },
+            {
+                text: "There are fresh fruits and milk in the kitchen. What healthy drink can you make?",
+                options: ["Fruit juice", "Hot coffee", "Sweet tea", "Black water"],
+                correct: 0, 
+                discussion: "Dari buah-buahan segar, kita bisa membuat minuman sehat seperti jus buah (Fruit juice).",
+                vocabulary: ["There are = Ada", "Fruit = Buah", "Milk = Susu", "Kitchen = Dapur", "Make = Membuat", "Fresh = Segar", "Healthy = Sehat", "Drink = Minuman", "Sweet = Manis", "Juice = Jus"]
+            }
+        ];
+
+        let quizQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let answeredQuestions = [];
+        let currentUser = {};
+
+        window.onload = function() {
+            loadHistory();
+        };
+
+        function shuffleArray(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        function startQuiz() {
+            const name = document.getElementById('studentName').value.trim();
+            const cls = document.getElementById('studentClass').value.trim();
+            
+            if (!name || !cls) {
+                alert("Mohon isi Nama Lengkap dan Kelas terlebih dahulu!");
+                return;
+            }
+            
+            currentUser = { name: name, class: cls, date: new Date().toLocaleString() };
+            
+            score = 0;
+            currentQuestionIndex = 0;
+            answeredQuestions = new Array(originalQuestions.length).fill(false);
+            
+            quizQuestions = JSON.parse(JSON.stringify(originalQuestions));
+            shuffleArray(quizQuestions);
+            
+            quizQuestions.forEach(q => {
+                const correctText = q.options[q.correct];
+                shuffleArray(q.options);
+                q.correct = q.options.indexOf(correctText); 
+            });
+            
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            
+            updateScoreDisplay();
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = quizQuestions[currentQuestionIndex];
+            document.getElementById('question-number').innerText = `Soal ${currentQuestionIndex + 1}/${quizQuestions.length}`;
+            document.getElementById('question-text').innerText = q.text;
+            
+            // Tampilkan Kamus Kecil (Vocabulary)
+            const vocabArea = document.getElementById('vocab-area');
+            const vocabList = document.getElementById('vocab-list');
+            vocabList.innerHTML = ''; // Bersihkan list sebelumnya
+            
+            if (q.vocabulary && q.vocabulary.length > 0) {
+                q.vocabulary.forEach(word => {
+                    const li = document.createElement('li');
+                    li.innerText = word;
+                    vocabList.appendChild(li);
+                });
+                vocabArea.classList.remove('hidden');
+            } else {
+                vocabArea.classList.add('hidden');
+            }
+            
+            const imgArea = document.getElementById('image-area');
+            if(q.img) {
+                document.getElementById('question-img').src = q.img;
+                document.getElementById('question-img').alt = q.imgAlt;
+                imgArea.classList.remove('hidden');
+            } else {
+                imgArea.classList.add('hidden');
+            }
+            
+            const optionsArea = document.getElementById('options-area');
+            optionsArea.innerHTML = '';
+            document.getElementById('discussion-area').style.display = 'none';
+            
+            document.getElementById('btn-prev').classList.toggle('hidden', currentQuestionIndex === 0);
+            document.getElementById('btn-next').classList.add('hidden');
+            document.getElementById('btn-finish').classList.add('hidden');
+            
+            q.options.forEach((optText, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = `${String.fromCharCode(65 + index)}. ${optText}`;
+                
+                if(answeredQuestions[currentQuestionIndex] !== false) {
+                    btn.disabled = true;
+                    if(index === q.correct) btn.classList.add('correct');
+                    else if(index === answeredQuestions[currentQuestionIndex]) btn.classList.add('wrong');
+                } else {
+                    btn.onclick = () => checkAnswer(index, btn);
+                }
+                
+                optionsArea.appendChild(btn);
+            });
+            
+            if(answeredQuestions[currentQuestionIndex] !== false) {
+                showDiscussion(q.discussion);
+                showNavigation();
+            }
+        }
+
+        function checkAnswer(selectedIndex, btnElement) {
+            if(answeredQuestions[currentQuestionIndex] !== false) return; 
+            
+            const q = quizQuestions[currentQuestionIndex];
+            answeredQuestions[currentQuestionIndex] = selectedIndex;
+            
+            const allBtns = document.getElementById('options-area').children;
+            for(let btn of allBtns) btn.disabled = true; 
+            
+            if(selectedIndex === q.correct) {
+                btnElement.classList.add('correct');
+                score += (100 / quizQuestions.length); 
+            } else {
+                btnElement.classList.add('wrong');
+                allBtns[q.correct].classList.add('correct'); 
+            }
+            
+            updateScoreDisplay();
+            showDiscussion(q.discussion);
+            showNavigation();
+        }
+
+        function showDiscussion(text) {
+            document.getElementById('discussion-text').innerText = text;
+            document.getElementById('discussion-area').style.display = 'block';
+        }
+
+        function showNavigation() {
+            if(currentQuestionIndex < quizQuestions.length - 1) {
+                document.getElementById('btn-next').classList.remove('hidden');
+            } else {
+                document.getElementById('btn-finish').classList.remove('hidden');
+            }
+        }
+
+        function updateScoreDisplay() {
+            let displayScore = Math.min(Math.round(score), 100);
+            document.getElementById('currentScore').innerText = displayScore;
+        }
+
+        function nextQuestion() {
+            if(currentQuestionIndex < quizQuestions.length - 1) {
+                currentQuestionIndex++;
+                showQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if(currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                showQuestion();
+            }
+        }
+
+        function finishQuiz() {
+            let finalScore = Math.min(Math.round(score), 100);
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('finalScore').innerText = finalScore;
+            
+            saveHistory(finalScore);
+            sendToRekap(finalScore);
+        }
+
+        function saveHistory(finalScore) {
+            const historyKey = KODE_SOAL + "_history";
+            let history = JSON.parse(localStorage.getItem(historyKey)) || [];
+            
+            history.push({
+                name: currentUser.name,
+                class: currentUser.class,
+                date: currentUser.date,
+                score: finalScore
+            });
+            
+            localStorage.setItem(historyKey, JSON.stringify(history));
+        }
+
+        function loadHistory() {
+            const historyKey = KODE_SOAL + "_history";
+            let history = JSON.parse(localStorage.getItem(historyKey)) || [];
+            const tbody = document.getElementById('historyBody');
+            tbody.innerHTML = '';
+            
+            if(history.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;">Belum ada riwayat pengerjaan</td></tr>';
+            } else {
+                history.forEach(h => {
+                    const row = `<tr>
+                        <td>${h.name}</td>
+                        <td>${h.class}</td>
+                        <td>${h.date}</td>
+                        <td style="font-weight:bold;">${h.score}</td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                });
+            }
+        }
+
+        function sendToRekap(finalScore) {
+            const data = {
+                type: 'SMARTBANKSOAL_UPDATE',
+                kode: KODE_SOAL,
+                nama: currentUser.name,
+                kelas: currentUser.class,
+                skor: finalScore,
+                waktu: currentUser.date
+            };
+            window.parent.postMessage(data, '*');
+            localStorage.setItem('rekap_last_entry', JSON.stringify(data));
+        }
+    </script>
+</body>
+</html>

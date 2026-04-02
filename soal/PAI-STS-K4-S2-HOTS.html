@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Interaktif PAI - STS</title>
+    <style>
+        /* Pengaturan Umum & Proteksi */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f8ff;
+            user-select: none; /* Anti copy paste */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        header {
+            background-color: #008080;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        /* Container Utama */
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            flex-grow: 1;
+        }
+
+        /* Tampilan Awal (Login) */
+        #login-screen {
+            text-align: center;
+        }
+        #login-screen h2 {
+            color: #ff6347;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        .input-group {
+            margin: 15px 0;
+        }
+        .input-group input {
+            padding: 10px;
+            width: 80%;
+            max-width: 300px;
+            border: 2px solid #008080;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        /* Tombol */
+        button {
+            padding: 12px 25px;
+            margin: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn-start { background-color: #32cd32; color: white; }
+        .btn-start:hover { background-color: #228b22; }
+        .btn-home { background-color: #ff8c00; color: white; display: block; margin: 15px auto; text-decoration: none; width: fit-content;}
+        .btn-home:hover { background-color: #e67e22; }
+        .btn-nav { background-color: #4682b4; color: white; }
+        .btn-nav:hover { background-color: #4169e1; }
+        .btn-nav:disabled { background-color: #ccc; cursor: not-allowed; }
+
+        /* Riwayat Skor */
+        #history-section {
+            margin-top: 30px;
+            border-top: 2px dashed #ccc;
+            padding-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        th { background-color: #f2f2f2; }
+
+        /* Tampilan Kuis */
+        #quiz-screen { display: none; }
+        .score-board {
+            display: flex;
+            justify-content: space-between;
+            background: #ffe4e1;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .question-text {
+            font-size: 18px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        .question-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        /* Pilihan Jawaban */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        .option-btn {
+            background-color: #f8f9fa;
+            border: 2px solid #dee2e6;
+            color: #333;
+            text-align: left;
+            padding: 15px;
+        }
+        .option-btn:hover:not(:disabled) { background-color: #e2e6ea; border-color: #dae0e5; }
+        .option-btn.correct { background-color: #28a745 !important; color: white !important; border-color: #28a745 !important; }
+        .option-btn.wrong { background-color: #dc3545 !important; color: white !important; border-color: #dc3545 !important; }
+
+        /* Pembahasan */
+        #explanation-box {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #eef2f3;
+            border-left: 5px solid #008080;
+            border-radius: 5px;
+        }
+
+        /* Navigasi Kuis */
+        .quiz-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #2c3e50;
+            color: #bdc3c7;
+            text-align: center;
+            padding: 20px;
+            margin-top: auto;
+            font-size: 14px;
+        }
+        footer a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        footer a:hover { color: #2980b9; text-decoration: underline; }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <header>Kode Soal: PAI-STS-K4-S2-HOTS</header>
+
+    <div class="container">
+        <div id="login-screen">
+            <h2>Kuis PAI Kelas 4 - STS</h2>
+            <div class="input-group">
+                <input type="text" id="studentName" placeholder="Masukkan Nama Lengkap" required autocomplete="off">
+            </div>
+            <div class="input-group">
+                <input type="text" id="studentClass" placeholder="Masukkan Kelas" required autocomplete="off">
+            </div>
+            <button class="btn-start" onclick="startQuiz()">Mulai Kuis Sekarang</button>
+            
+            <a href="../index.html" class="btn-home">Kembali ke Home</a>
+
+            <div id="history-section" style="max-height: 300px; overflow-y: auto;">
+                <h3>Riwayat Pencapaian Skor</h3>
+                <table id="historyTable">
+                    <thead>
+                        <tr>
+                            <th>Nama Lengkap</th>
+                            <th>Kelas</th>
+                            <th>Skor</th>
+                            <th>Waktu Pengerjaan</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyBody">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="quiz-screen">
+            <div class="score-board">
+                <span id="display-user">Nama: - | Kelas: -</span>
+                <span id="display-score">Skor Sementara: 0</span>
+            </div>
+            
+            <h3 id="question-number">Soal No. 1</h3>
+            
+            <div id="image-container" style="display: none; text-align: center;">
+                <img id="question-img" class="question-image" src="" alt="Gambar Pendukung Soal">
+            </div>
+
+            <div id="question-text" class="question-text">Teks soal akan muncul di sini.</div>
+            
+            <div class="options-grid" id="options-container">
+                </div>
+
+            <div id="explanation-box">
+                <strong>Pembahasan:</strong> <span id="explanation-text"></span>
+            </div>
+
+            <div class="quiz-nav">
+                <button id="btn-prev" class="btn-nav" onclick="prevQuestion()" disabled>Soal Sebelumnya</button>
+                <button id="btn-next" class="btn-nav" onclick="nextQuestion()" disabled>Soal Selanjutnya</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; <span id="currentYear"></span> Oleh: Dwi Endrasto | Oleh: Dwi Endrasto | Dibuat dengan ❤️ untuk generasi cerdas bangsa<br>
+    </footer>
+
+    <script>
+        // Update Tahun Footer Otomatis
+        document.getElementById('currentYear').innerText = new Date().getFullYear();
+
+        // Keamanan Anti Copy Paste tambahan
+        document.addEventListener('copy', (e) => { e.preventDefault(); });
+        document.addEventListener('paste', (e) => { e.preventDefault(); });
+        document.addEventListener('cut', (e) => { e.preventDefault(); });
+
+        // Identitas Kunci Kuis
+        const QUIZ_ID = "PAI-STS-K4-S2-HOTS";
+        const STORAGE_KEY = `quiz_${QUIZ_ID}_history`;
+
+        // Basis Data Soal (25 Soal, 5 Bergambar)
+        const rawQuestions = [
+            {
+                q: "Surah At-Tin menjelaskan tentang keistimewaan manusia. Pesan utama dari penciptaan manusia dalam surah tersebut adalah...",
+                img: "gambar/buah-tin.jpg",
+                options: [
+                    { text: "Manusia ciptaan paling sempurna.", correct: true },
+                    { text: "Manusia makhluk paling lemah.", correct: false },
+                    { text: "Manusia sering berbuat dosa.", correct: false },
+                    { text: "Manusia butuh makanan sehat.", correct: false }
+                ],
+                explanation: "Allah menegaskan dalam surah At-Tin bahwa manusia diciptakan dalam bentuk yang sebaik-baiknya (ahsani taqwim)."
+            },
+            {
+                q: "Pak Ahmad rutin mengunjungi kerabatnya di desa. Manfaat utama perilaku Pak Ahmad sesuai hadis adalah...",
+                img: "",
+                options: [
+                    { text: "Menambah rezeki dan umur.", correct: true },
+                    { text: "Mendapat pujian dari warga.", correct: false },
+                    { text: "Dikenal sebagai orang kaya.", correct: false },
+                    { text: "Menjadi tokoh masyarakat desa.", correct: false }
+                ],
+                explanation: "Nabi Muhammad SAW bersabda bahwa siapa yang ingin dilapangkan rezekinya dan dipanjangkan umurnya, hendaklah ia menyambung tali silaturrahmi."
+            },
+            {
+                q: "Allah mengutus Nabi dan Rasul untuk manusia. Perbedaan tugas pokok Rasul dibandingkan Nabi adalah...",
+                img: "",
+                options: [
+                    { text: "Wajib menyampaikan wahyu umat.", correct: true },
+                    { text: "Hanya untuk dirinya sendiri.", correct: false },
+                    { text: "Menuliskan kitab suci baru.", correct: false },
+                    { text: "Menjadi pemimpin umat Islam.", correct: false }
+                ],
+                explanation: "Rasul menerima wahyu dan wajib menyampaikannya kepada umatnya, sedangkan Nabi tidak memiliki kewajiban menyampaikan wahyu tersebut."
+            },
+            {
+                q: "Rasul selalu menyampaikan wahyu Allah tanpa ada yang disembunyikan. Hal ini mencerminkan sifat wajib...",
+                img: "",
+                options: [
+                    { text: "Tablig yang berarti menyampaikan.", correct: true },
+                    { text: "Fatanah yang berarti cerdas.", correct: false },
+                    { text: "Sidik yang berarti jujur.", correct: false },
+                    { text: "Amanah yang berarti dipercaya.", correct: false }
+                ],
+                explanation: "Tablig artinya menyampaikan. Rasul wajib menyampaikan segala perintah dan larangan Allah kepada umatnya."
+            },
+            {
+                q: "Budi menemukan uang saku teman yang jatuh di lantai kelas. Tindakan anak saleh adalah...",
+                img: "",
+                options: [
+                    { text: "Menyerahkan kepada guru kelas.", correct: true },
+                    { text: "Menyimpan dalam tas sendiri.", correct: false },
+                    { text: "Membelanjakan di kantin sekolah.", correct: false },
+                    { text: "Membiarkan uang tetap disana.", correct: false }
+                ],
+                explanation: "Anak saleh memiliki sifat jujur dan amanah dengan mengembalikan barang yang bukan miliknya kepada pihak yang berwenang."
+            },
+            {
+                q: "Perhatikan gambar anak yang baru tiba di rumah! Adab yang tepat saat memasuki rumah adalah...",
+                img: "gambar/masuk-rumah.jpg",
+                options: [
+                    { text: "Mengucapkan salam dengan jelas.", correct: true },
+                    { text: "Mengetuk pintu sangat keras.", correct: false },
+                    { text: "Memanggil nama ibu kencang.", correct: false },
+                    { text: "Langsung masuk menuju kamar.", correct: false }
+                ],
+                explanation: "Islam mengajarkan untuk selalu mengucapkan salam ketika memasuki rumah sebagai bentuk doa keselamatan."
+            },
+            {
+                q: "Manusia dapat dikembalikan ke tempat yang serendah-rendahnya. Agar terhindar dari ancaman tersebut, kita harus...",
+                img: "",
+                options: [
+                    { text: "Rajin beramal saleh selalu.", correct: true },
+                    { text: "Mencari harta sebanyak mungkin.", correct: false },
+                    { text: "Menghindari pergaulan dengan teman.", correct: false },
+                    { text: "Menuntut ilmu ke luar.", correct: false }
+                ],
+                explanation: "Dalam surah At-Tin dijelaskan bahwa pengecualian dari kehinaan adalah bagi mereka yang beriman dan mengerjakan amal saleh."
+            },
+            {
+                q: "Terdapat hukum bacaan Izhar Halqi pada potongan lafal Al-Qur'an. Cara membacanya yang tepat adalah...",
+                img: "",
+                options: [
+                    { text: "Jelas tanpa suara dengung.", correct: true },
+                    { text: "Masuk dengan suara dengung.", correct: false },
+                    { text: "Samar dengan suara dengung.", correct: false },
+                    { text: "Membalik menjadi huruf mim.", correct: false }
+                ],
+                explanation: "Izhar berarti jelas. Jika nun sukun atau tanwin bertemu huruf halqi, dibaca jelas tanpa berdengung."
+            },
+            {
+                q: "Seorang siswa yang berusaha meneladani sifat amanah dari Rasul akan menunjukkan perilaku keseharian yaitu...",
+                img: "",
+                options: [
+                    { text: "Menjaga titipan dengan baik.", correct: true },
+                    { text: "Mengerjakan tugas paling cepat.", correct: false },
+                    { text: "Membantu teman saat ujian.", correct: false },
+                    { text: "Selalu datang paling awal.", correct: false }
+                ],
+                explanation: "Amanah berarti dapat dipercaya. Menjaga titipan atau rahasia adalah bentuk implementasi sifat amanah."
+            },
+            {
+                q: "Nabi Muhammad mampu mendamaikan kabilah saat peletakan Hajar Aswad. Hal ini membuktikan kecerdasan sifat...",
+                img: "",
+                options: [
+                    { text: "Fatanah dalam memecahkan masalah.", correct: true },
+                    { text: "Sidik dalam setiap perkataan.", correct: false },
+                    { text: "Tablig dalam menyiarkan agama.", correct: false },
+                    { text: "Amanah dalam memegang janji.", correct: false }
+                ],
+                explanation: "Fatanah artinya cerdas. Nabi Muhammad SAW menggunakan kecerdasannya untuk memberikan solusi yang adil bagi semua kabilah."
+            },
+            {
+                q: "Gambar perahu besar ini mengingatkan pada mukjizat salah satu Rasul Ulul Azmi. Ketabahannya mengajarkan kita...",
+                img: "gambar/perahu-nuh.jpg",
+                options: [
+                    { text: "Sabar menghadapi segala ujian.", correct: true },
+                    { text: "Membangun kapal yang besar.", correct: false },
+                    { text: "Menjauhi orang yang ingkar.", correct: false },
+                    { text: "Marah kepada orang jahat.", correct: false }
+                ],
+                explanation: "Nabi Nuh a.s. adalah Rasul Ulul Azmi yang sangat sabar berdakwah ratusan tahun meski banyak yang menolak."
+            },
+            {
+                q: "Seorang Rasul mustahil memiliki sifat Khianat. Bukti bahwa Rasul tidak berkhianat kepada umatnya adalah...",
+                img: "",
+                options: [
+                    { text: "Selalu menepati janji Allah.", correct: true },
+                    { text: "Tidak pernah merasa lapar.", correct: false },
+                    { text: "Selalu menang dalam perang.", correct: false },
+                    { text: "Tidak pernah sakit parah.", correct: false }
+                ],
+                explanation: "Rasul adalah manusia pilihan yang sangat terjaga kejujurannya dan selalu menepati janji serta perintah Allah."
+            },
+            {
+                q: "Ketika bertemu teman di jalan raya pada pagi hari, kalimat sapaan utama yang diucapkan adalah...",
+                img: "",
+                options: [
+                    { text: "Assalamu alaikum warahmatullahi wabarakatuh.", correct: true },
+                    { text: "Selamat pagi wahai kawanku.", correct: false },
+                    { text: "Hai bagaimana kabarmu sekarang.", correct: false },
+                    { text: "Halo selamat bertemu kembali.", correct: false }
+                ],
+                explanation: "Bagi seorang muslim, salam (Assalamu'alaikum) adalah sapaan terbaik yang berisi doa keselamatan."
+            },
+            {
+                q: "Seseorang sengaja tidak datang padahal sudah berjanji mengembalikan buku. Perilaku ini menunjukkan ciri kemunafikan...",
+                img: "",
+                options: [
+                    { text: "Ingkar bila berbuat janji.", correct: true },
+                    { text: "Dusta bila sedang bicara.", correct: false },
+                    { text: "Khianat bila diberi amanah.", correct: false },
+                    { text: "Marah bila ditegur teman.", correct: false }
+                ],
+                explanation: "Tiga ciri munafik: jika bicara berdusta, jika berjanji mengingkari, dan jika dipercaya berkhianat."
+            },
+            {
+                q: "Warga desa bergotong royong membangun jembatan bersama. Manfaat utama tolong menolong dalam Islam adalah...",
+                img: "",
+                options: [
+                    { text: "Mempererat tali persaudaraan warga.", correct: true },
+                    { text: "Mendapatkan pujian dari bupati.", correct: false },
+                    { text: "Menghemat biaya anggaran desa.", correct: false },
+                    { text: "Menjadi juara lomba desa.", correct: false }
+                ],
+                explanation: "Tolong menolong dalam kebaikan akan menumbuhkan kasih sayang dan memperkuat ukhuwah atau persaudaraan."
+            },
+            {
+                q: "Gambar ini menunjukkan kota Mekah yang disebut aman dalam surah At-Tin. Makna kota aman adalah...",
+                img: "gambar/kota-mekah.jpg",
+                options: [
+                    { text: "Terlindungi dari segala bahaya.", correct: true },
+                    { text: "Kota dengan banyak tentara.", correct: false },
+                    { text: "Tempat orang mencari harta.", correct: false },
+                    { text: "Pusat perdagangan zaman dahulu.", correct: false }
+                ],
+                explanation: "Mekah (Baladil Amin) dijamin keamanannya oleh Allah bagi siapa saja yang memasukinya."
+            },
+            {
+                q: "Allah mengutus rasul untuk memberi peringatan dan kabar gembira. Tujuan utamanya agar manusia di bumi...",
+                img: "",
+                options: [
+                    { text: "Hidup lurus sesuai petunjuk.", correct: true },
+                    { text: "Menjadi orang paling kaya.", correct: false },
+                    { text: "Takut kepada hari kiamat.", correct: false },
+                    { text: "Bisa melihat mukjizat nabi.", correct: false }
+                ],
+                explanation: "Rasul menjadi pembawa risalah agar manusia tidak tersesat dan hidup sesuai petunjuk Allah SWT."
+            },
+            {
+                q: "Kita harus berani mengatakan kebenaran walau terkadang terasa sulit. Sikap ini meneladani sifat rasul yaitu...",
+                img: "",
+                options: [
+                    { text: "Sidik dalam kehidupan nyata.", correct: true },
+                    { text: "Amanah dalam menjaga barang.", correct: false },
+                    { text: "Tablig dalam menyiarkan agama.", correct: false },
+                    { text: "Fatanah dalam memecahkan masalah.", correct: false }
+                ],
+                explanation: "Sidik berarti benar/jujur. Mengatakan kebenaran adalah bentuk implementasi sifat sidik."
+            },
+            {
+                q: "Memulai mengucapkan salam hukumnya adalah sunnah. Namun, apabila kita mendengarnya, maka hukum menjawabnya adalah...",
+                img: "",
+                options: [
+                    { text: "Wajib bagi yang mendengar.", correct: true },
+                    { text: "Sunnah bagi yang mendengar.", correct: false },
+                    { text: "Mubah bagi yang mendengar.", correct: false },
+                    { text: "Makruh bagi yang mendengar.", correct: false }
+                ],
+                explanation: "Menjawab salam hukumnya adalah wajib sebagai bentuk penghormatan balasan yang diwajibkan syariat."
+            },
+            {
+                q: "Perhatikan gambar kejadian di jalan ini! Melihat kawan terjatuh dari sepeda, tindakan yang sesuai adalah...",
+                img: "gambar/jatuh-sepeda.jpg",
+                options: [
+                    { text: "Segera menolong dengan ikhlas.", correct: true },
+                    { text: "Mencari guru untuk melapor.", correct: false },
+                    { text: "Menertawakan karena kurang hati-hati.", correct: false },
+                    { text: "Membiarkan karena bukan urusan.", correct: false }
+                ],
+                explanation: "Menolong orang yang sedang kesulitan adalah kewajiban sesama muslim tanpa mengharapkan imbalan."
+            },
+            {
+                q: "Sifat munafik sangat dibenci oleh Allah SWT. Ancaman balasan bagi orang munafik di akhirat kelak adalah...",
+                img: "",
+                options: [
+                    { text: "Ditempatkan dalam neraka terbawah.", correct: true },
+                    { text: "Diberi peringatan dengan keras.", correct: false },
+                    { text: "Dijauhkan dari rezeki dunia.", correct: false },
+                    { text: "Tidak mendapat teman sejati.", correct: false }
+                ],
+                explanation: "Dalam Al-Qur'an disebutkan bahwa orang-orang munafik akan ditempatkan pada tingkatan neraka yang paling bawah."
+            },
+            {
+                q: "Secara bahasa dan istilah, silaturrahmi memiliki arti penting bagi umat beragama Islam. Artinya adalah...",
+                img: "",
+                options: [
+                    { text: "Menyambung tali kasih sayang.", correct: true },
+                    { text: "Meminta maaf atas kesalahan.", correct: false },
+                    { text: "Berkunjung ke rumah tetangga.", correct: false },
+                    { text: "Memberikan hadiah kepada kerabat.", correct: false }
+                ],
+                explanation: "Silaturrahmi berasal dari kata shilah (menyambung) dan rahim (kasih sayang atau kerabat)."
+            },
+            {
+                q: "Ayat 'Laqad khalaqnal insaana fii ahsani taqwim' menegaskan bahwa manusia diciptakan Allah Ta'ala dalam bentuk...",
+                img: "",
+                options: [
+                    { text: "Fisik yang paling sempurna.", correct: true },
+                    { text: "Hati yang sangat suci.", correct: false },
+                    { text: "Rupa yang biasa saja.", correct: false },
+                    { text: "Keadaan lemah dan hina.", correct: false }
+                ],
+                explanation: "Ahsani taqwim berarti sebaik-baik bentuk, menunjukkan kelebihan fisik dan akal manusia dibanding makhluk lain."
+            },
+            {
+                q: "Rasul diutus untuk memberikan teladan akhlak mulia. Hal ini bertujuan utama agar umat manusia dapat...",
+                img: "",
+                options: [
+                    { text: "Memiliki budi pekerti luhur.", correct: true },
+                    { text: "Dihormati oleh bangsa lain.", correct: false },
+                    { text: "Menjadi pemimpin yang kuat.", correct: false },
+                    { text: "Mendapat banyak harta benda.", correct: false }
+                ],
+                explanation: "Rasulullah SAW bersabda bahwa beliau diutus semata-mata untuk menyempurnakan akhlak yang mulia."
+            },
+            {
+                q: "Kalimat 'Assalamu'alaikum' bukan sekadar sapaan lewat saja. Di dalamnya terkandung makna doa untuk memohon...",
+                img: "",
+                options: [
+                    { text: "Keselamatan dari Allah Ta'ala.", correct: true },
+                    { text: "Rezeki yang sangat banyak.", correct: false },
+                    { text: "Kesehatan untuk keluarga kita.", correct: false },
+                    { text: "Umur yang sangat panjang.", correct: false }
+                ],
+                explanation: "Assalamu'alaikum secara harfiah berarti semoga keselamatan, rahmat, dan berkah Allah tercurah kepada kalian."
+            }
+        ];
+
+        let questions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userAnswers = []; // Array Flagging
+        let userInfo = {};
+
+        // Acak Array
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        // Tampilkan Riwayat (Tanpa Dihapus/Dibatasi)
+        function loadHistory() {
+            const history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            const tbody = document.getElementById('historyBody');
+            tbody.innerHTML = '';
+            
+            if (history.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4">Belum ada riwayat pengerjaan.</td></tr>';
+            } else {
+                history.forEach(data => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><strong>${data.name}</strong></td>
+                            <td>${data.class}</td>
+                            <td><strong>${data.score}</strong></td>
+                            <td style="font-size: 0.9em; color: gray;">${data.time}</td>
+                        </tr>
+                    `;
+                });
+            }
+        }
+
+        // Mulai Kuis
+        function startQuiz() {
+            const nameInput = document.getElementById('studentName').value.trim();
+            const classInput = document.getElementById('studentClass').value.trim();
+
+            if (!nameInput || !classInput) {
+                alert("Mohon isi Nama Lengkap dan Kelas terlebih dahulu!");
+                return;
+            }
+
+            // Aturan 3: Reset Variabel Secara Menyeluruh
+            userInfo = { name: nameInput, class: classInput };
+            score = 0;
+            currentQuestionIndex = 0;
+            
+            document.getElementById('display-user').innerText = `Nama: ${userInfo.name} | Kelas: ${userInfo.class}`;
+            
+            // Persiapan Soal
+            questions = JSON.parse(JSON.stringify(rawQuestions));
+            shuffleArray(questions);
+            questions.forEach(q => shuffleArray(q.options));
+            
+            // Aturan 1: Set Flagging Kosong
+            userAnswers = new Array(questions.length).fill(null);
+            
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('quiz-screen').style.display = 'block';
+            
+            updateScoreDisplay(); // Render 0 di awal
+            showQuestion();
+        }
+
+        // Fungsi Perhitungan Persentase dan Pembatas (Limiter)
+        function updateScoreDisplay() {
+            let correctAnswers = 0;
+            
+            // Cek array flagging untuk total jawaban benar
+            questions.forEach((q, index) => {
+                if (userAnswers[index] !== null) {
+                    if (q.options[userAnswers[index]].correct) {
+                        correctAnswers++;
+                    }
+                }
+            });
+
+            // Aturan 4: Perhitungan Berbasis Persentase
+            let calculatedScore = (correctAnswers / questions.length) * 100;
+            
+            // Aturan 2: Penggunaan Fungsi Pembatas (limiter)
+            score = Math.min(Math.round(calculatedScore), 100);
+            
+            document.getElementById('display-score').innerText = `Skor Sementara: ${score}`;
+        }
+
+        function showQuestion() {
+            const q = questions[currentQuestionIndex];
+            
+            document.getElementById('question-number').innerText = `Soal No. ${currentQuestionIndex + 1} dari ${questions.length}`;
+            document.getElementById('question-text').innerText = q.q;
+            
+            // Atur Gambar
+            const imgContainer = document.getElementById('image-container');
+            const imgElement = document.getElementById('question-img');
+            if (q.img) {
+                imgElement.src = q.img;
+                imgContainer.style.display = 'block';
+            } else {
+                imgContainer.style.display = 'none';
+            }
+
+            // Atur Pilihan
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            q.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = `${String.fromCharCode(65 + index)}. ${opt.text}`;
+                
+                // Jika sudah pernah dijawab (Cek dari Flag)
+                if (userAnswers[currentQuestionIndex] !== null) {
+                    btn.disabled = true;
+                    if (userAnswers[currentQuestionIndex] === index) {
+                        btn.classList.add(opt.correct ? 'correct' : 'wrong');
+                    }
+                    // Tampilkan mana yang benar jika user salah jawab
+                    if (opt.correct && userAnswers[currentQuestionIndex] !== index) {
+                         btn.style.border = "2px solid #28a745";
+                         btn.style.color = "#28a745";
+                    }
+                } else {
+                    btn.onclick = () => selectAnswer(index);
+                }
+                optionsContainer.appendChild(btn);
+            });
+
+            // Atur Pembahasan
+            const explanationBox = document.getElementById('explanation-box');
+            if (userAnswers[currentQuestionIndex] !== null) {
+                document.getElementById('explanation-text').innerText = q.explanation;
+                explanationBox.style.display = 'block';
+            } else {
+                explanationBox.style.display = 'none';
+            }
+
+            // Atur Navigasi
+            document.getElementById('btn-prev').disabled = currentQuestionIndex === 0;
+            
+            const nextBtn = document.getElementById('btn-next');
+            if (currentQuestionIndex === questions.length - 1) {
+                nextBtn.innerText = "Selesai & Simpan";
+                nextBtn.disabled = userAnswers[currentQuestionIndex] === null; 
+            } else {
+                nextBtn.innerText = "Soal Selanjutnya";
+                nextBtn.disabled = userAnswers[currentQuestionIndex] === null;
+            }
+        }
+
+        function selectAnswer(selectedIndex) {
+            // Cegah klik ganda
+            if (userAnswers[currentQuestionIndex] !== null) return;
+            
+            // Simpan indeks pilihan pengguna ke array Flag
+            userAnswers[currentQuestionIndex] = selectedIndex;
+            
+            // Update kalkulasi dinamis
+            updateScoreDisplay();
+
+            showQuestion(); // Refresh tampilan untuk memunculkan warna dan pembahasan
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                showQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                showQuestion();
+            }
+        }
+
+        function finishQuiz() {
+            updateScoreDisplay(); // Final kalkulasi
+
+            const sessionData = {
+                name: userInfo.name,
+                class: userInfo.class,
+                score: score,
+                quiz_id: QUIZ_ID, // Identitas khusus
+                time: new Date().toLocaleString('id-ID')
+            };
+
+            // Simpan ke riwayat lokal halaman ini
+            const history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            history.unshift(sessionData); // Unshift untuk memasukkan data ke paling atas
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+
+            // ==========================================
+            // KOMUNIKASI DENGAN FILE rekap.html 
+            // ==========================================
+            
+            // Metode 1: Global LocalStorage
+            let sharedRekap = JSON.parse(localStorage.getItem("global_rekap_skor")) || [];
+            sharedRekap.unshift(sessionData);
+            localStorage.setItem("global_rekap_skor", JSON.stringify(sharedRekap));
+
+            // Metode 2: postMessage (Jika iframe)
+            const messagePayload = {
+                type: 'QUIZ_SUBMITTED',
+                payload: sessionData
+            };
+            if (window.opener) {
+                window.opener.postMessage(messagePayload, '*');
+            } else if (window.parent !== window) {
+                window.parent.postMessage(messagePayload, '*');
+            }
+
+            alert(`Kuis selesai!\nSkor akhir Anda: ${score}`);
+
+            // Reset ke tampilan awal
+            document.getElementById('studentName').value = '';
+            document.getElementById('studentClass').value = '';
+            document.getElementById('quiz-screen').style.display = 'none';
+            document.getElementById('login-screen').style.display = 'block';
+            
+            loadHistory();
+        }
+
+        // Jalankan saat pertama kali dimuat
+        window.onload = loadHistory;
+
+    </script>
+</body>
+</html>

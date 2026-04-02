@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis IND-STS-K4-S2-HOTS</title>
+    <style>
+        /* Desain Umum & Anti-Copas */
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            user-select: none; /* Anti copy-paste */
+        }
+        body {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Container Utama */
+        .container {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 30px;
+            flex-grow: 1;
+        }
+
+        /* Header */
+        .header-code {
+            text-align: center;
+            font-weight: bold;
+            color: #ff6b6b;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            border-bottom: 2px dashed #ff6b6b;
+            padding-bottom: 10px;
+        }
+
+        /* Tampilan Login */
+        #login-screen {
+            display: block;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: bold;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        .btn {
+            background-color: #4facfe;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: 0.3s;
+            margin-top: 10px;
+            width: 100%;
+        }
+        .btn:hover { background-color: #00f2fe; }
+        .btn-home {
+            background-color: #ff9f43;
+            margin-bottom: 20px;
+        }
+        .btn-home:hover { background-color: #ee5253; }
+
+        /* Tampilan Kuis */
+        #quiz-screen { display: none; }
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #555;
+        }
+        .question-text {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        .question-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 2px solid #eee;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option-btn {
+            background-color: #f8f9fa;
+            border: 2px solid #e9ecef;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: left;
+            transition: 0.2s;
+        }
+        .option-btn:hover:not(:disabled) { background-color: #e2e6ea; }
+        .option-btn.correct {
+            background-color: #28a745 !important;
+            color: white;
+            border-color: #28a745;
+        }
+        .option-btn.wrong {
+            background-color: #dc3545 !important;
+            color: white;
+            border-color: #dc3545;
+        }
+        .option-btn:disabled { cursor: not-allowed; }
+
+        /* Navigasi Kuis & Pembahasan */
+        .explanation {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border-left: 5px solid #17a2b8;
+            border-radius: 5px;
+            display: none;
+            font-size: 0.95rem;
+        }
+        .navigation-btns {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            gap: 10px;
+        }
+        .nav-btn {
+            flex: 1;
+            background-color: #6c5ce7;
+            display: none;
+        }
+        .nav-btn:hover { background-color: #a29bfe; }
+        .btn-prev { background-color: #b2bec3; display: block; }
+        .btn-prev:hover { background-color: #dfe6e9; color: #333; }
+
+        /* Riwayat Skor */
+        #history-section {
+            margin-top: 30px;
+            background: #f1f2f6;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: left;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        .history-item {
+            border-bottom: 1px solid #ccc;
+            padding: 8px 0;
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #1a1a1a;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            margin-top: auto;
+            font-size: 0.9rem;
+        }
+        footer a {
+            color: #4facfe;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        footer a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body oncontextmenu="return false;"> 
+    <div class="container">
+        <div id="login-screen">
+            <div class="header-code">IND-STS-K4-S2-HOTS</div>
+            <h2>Selamat Datang di Kuis!</h2>
+            
+            <button class="btn btn-home" onclick="window.location.href='../index.html'">Kembali ke Home</button>
+
+            <div class="form-group">
+                <label for="nama">Nama Lengkap:</label>
+                <input type="text" id="nama" placeholder="Masukkan nama Anda" required>
+            </div>
+            <div class="form-group">
+                <label for="kelas">Kelas:</label>
+                <input type="text" id="kelas" placeholder="Masukkan kelas Anda" required>
+            </div>
+            <button class="btn" onclick="startQuiz()">Mulai Kuis</button>
+
+            <div id="history-section">
+                <h3>Riwayat Skor Sementara</h3>
+                <div id="history-list">Belum ada riwayat pengerjaan.</div>
+            </div>
+        </div>
+
+        <div id="quiz-screen">
+            <div class="header-code">IND-STS-K4-S2-HOTS</div>
+            <div class="quiz-header">
+                <span id="q-number">Soal 1 / 25</span>
+                <span id="live-score">Skor: 0</span>
+            </div>
+            
+            <div id="question-container">
+            </div>
+
+            <div id="explanation" class="explanation"></div>
+
+            <div class="navigation-btns">
+                <button class="btn btn-prev" id="btn-prev" onclick="prevQuestion()">Soal Sebelumnya</button>
+                <button class="btn nav-btn" id="btn-next" onclick="nextQuestion()">Soal Selanjutnya</button>
+                <button class="btn nav-btn" id="btn-finish" onclick="finishQuiz()" style="background-color: #ff4757;">Selesai</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        &copy; <span id="year"></span> Oleh: Dwi Endrasto | Dibuat dengan ❤️ untuk generasi cerdas bangsa
+    </footer>
+
+    <script>
+        // Set Tahun Footer
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // Keamanan: Anti Copy Paste
+        document.addEventListener('copy', (e) => { e.preventDefault(); });
+        document.addEventListener('paste', (e) => { e.preventDefault(); });
+        document.addEventListener('cut', (e) => { e.preventDefault(); });
+        document.addEventListener('selectstart', (e) => { e.preventDefault(); });
+
+        // IDENTIFIKATOR UNIK - Mencegah bentrok (nyasar) dengan modul kuis lainnya
+        const QUIZ_ID = "IND-STS-K4-S2-HOTS";
+        const STORAGE_KEY = `quiz_${QUIZ_ID}_history`;
+
+        // Bank Soal 
+        const questions = [
+            { id: 1, text: "Budi suka membaca buku di perpustakaan setiap hari agar pintar. Apa kegiatan rutin Budi?", img: "", alt: "", 
+              options: [ {t: "Membaca buku", c: true}, {t: "Menulis novel", c: false}, {t: "Bermain bola", c: false}, {t: "Menjual koran", c: false} ], 
+              explanation: "Informasi dalam teks dengan jelas menyebutkan kegiatan Budi adalah membaca buku." },
+            { id: 2, text: "Rina merasa gundah karena nilai ujiannya kurang memuaskan. Makna kata gundah adalah...", img: "", alt: "", 
+              options: [ {t: "Sangat sedih", c: true}, {t: "Cukup senang", c: false}, {t: "Amat tenang", c: false}, {t: "Paling marah", c: false} ], 
+              explanation: "Gundah memiliki arti sedih, gelisah, atau duka." },
+            { id: 3, text: "Mentari pagi bersinar terang, burung berkicau sangat riang. Suasana puisi tersebut adalah...", img: "", alt: "", 
+              options: [ {t: "Sangat ceria", c: true}, {t: "Amat muram", c: false}, {t: "Cukup sedih", c: false}, {t: "Paling sepi", c: false} ], 
+              explanation: "Kata 'bersinar terang' dan 'sangat riang' menunjukkan suasana yang sangat ceria." },
+            { id: 4, text: "Berdasarkan gambar infografik pemilahan sampah di bawah ini, sampah daun dan sisa makanan masuk ke...", 
+              img: "gambar/infografik_sampah.jpg", alt: "Gambar infografik pemilahan sampah hijau dan kuning", 
+              options: [ {t: "Tong organik", c: true}, {t: "Tong plastik", c: false}, {t: "Tong beracun", c: false}, {t: "Tong beling", c: false} ], 
+              explanation: "Sampah daun dan sisa makanan adalah benda yang dapat membusuk sehingga masuk tong organik." },
+            { id: 5, text: "Cara membuat teh: (1) Siapkan air (2) Masukkan teh. Langkah pertama membuat teh adalah...", img: "", alt: "", 
+              options: [ {t: "Rebus air", c: true}, {t: "Buang teh", c: false}, {t: "Cuci gelas", c: false}, {t: "Aduk gula", c: false} ], 
+              explanation: "Langkah pertama sesuai prosedur membuat teh adalah merebus atau menyiapkan air." },
+            { id: 6, text: "Pilihlah kalimat di bawah ini yang merupakan kalimat efektif yang benar!", img: "", alt: "", 
+              options: [ {t: "Para siswa berkumpul", c: true}, {t: "Banyak para siswa", c: false}, {t: "Semua para siswa", c: false}, {t: "Kumpulan para siswa", c: false} ], 
+              explanation: "Kalimat efektif tidak melakukan pemborosan kata. Kata 'para' sudah bermakna banyak." },
+            { id: 7, text: "Berapakah nilai mata uang yang ditunjukkan pada gambar di bawah ini?", 
+              img: "gambar/uang_10000.jpg", alt: "Gambar uang pecahan sepuluh ribu rupiah warna ungu", 
+              options: [ {t: "Sepuluh ribu rupiah", c: true}, {t: "Seratus ribu rupiah", c: false}, {t: "Lima puluh rupiah", c: false}, {t: "Dua puluh rupiah", c: false} ], 
+              explanation: "Gambar tersebut menunjukkan pecahan uang kertas sepuluh ribu rupiah." },
+            { id: 8, text: "Berdasarkan ejaan yang disempurnakan, penulisan nilai uang yang tepat dibaca sebagai...", img: "", alt: "", 
+              options: [ {t: "Sepuluh ribu rupiah", c: true}, {t: "Rupiah sepuluh ribu", c: false}, {t: "Ribu sepuluh rupiah", c: false}, {t: "Sepuluh rupiah ribu", c: false} ], 
+              explanation: "Dalam bahasa Indonesia, nominal disebutkan terlebih dahulu baru diakhiri dengan mata uang (rupiah)." },
+            { id: 9, text: "Salah satu ciri utama dari sebuah teks laporan perjalanan yang baik adalah...", img: "", alt: "", 
+              options: [ {t: "Memuat fakta nyata", c: true}, {t: "Memuat cerita fiksi", c: false}, {t: "Memuat kisah khayal", c: false}, {t: "Memuat dongeng peri", c: false} ], 
+              explanation: "Laporan perjalanan harus bersifat objektif dan memuat fakta nyata yang dialami penulis." },
+            { id: 10, text: "Manakah dari kalimat berikut ini yang menggunakan majas metafora dengan tepat?", img: "", alt: "", 
+              options: [ {t: "Dia bintang kelas", c: true}, {t: "Dia sangat pintar", c: false}, {t: "Dia rajin belajar", c: false}, {t: "Dia suka membaca", c: false} ], 
+              explanation: "Majas metafora membandingkan dua hal secara langsung tanpa kata penghubung. 'Bintang kelas' adalah metafora untuk anak pintar." },
+            { id: 11, text: "Saat pulang dari desa, paman membawa buah tangan yang banyak. Makna 'buah tangan' adalah...", img: "", alt: "", 
+              options: [ {t: "Oleh oleh khas", c: true}, {t: "Tangan yang sakit", c: false}, {t: "Buah yang manis", c: false}, {t: "Tangan yang kuat", c: false} ], 
+              explanation: "Buah tangan adalah kiasan/ungkapan yang berarti oleh-oleh atau bingkisan." },
+            { id: 12, text: "Sebelum mulai menulis sebuah cerita pengalaman pribadi, langkah pertama adalah...", img: "", alt: "", 
+              options: [ {t: "Tentukan tema cerita", c: true}, {t: "Buat judul buku", c: false}, {t: "Tulis kata tamat", c: false}, {t: "Gambar sampul depan", c: false} ], 
+              explanation: "Langkah pertama sebelum menulis cerita pengalaman adalah menentukan tema atau topik utamanya." },
+            { id: 13, text: "Ketika teman sedang menyampaikan pendapat dalam diskusi, tanggapan yang sopan adalah...", img: "", alt: "", 
+              options: [ {t: "Saya sangat setuju", c: true}, {t: "Kamu selalu salah", c: false}, {t: "Ide itu buruk", c: false}, {t: "Diam saja kamu", c: false} ], 
+              explanation: "Tanggapan dalam diskusi harus disampaikan dengan santun, seperti 'Saya sangat setuju'." },
+            { id: 14, text: "Bagaimana cara membaca nominal uang logam Rp1.500,00 yang tepat?", img: "", alt: "", 
+              options: [ {t: "Seribu lima ratus", c: true}, {t: "Lima ratus seribu", c: false}, {t: "Ratus lima seribu", c: false}, {t: "Seribu ratus lima", c: false} ], 
+              explanation: "Angka 1.500 dibaca seribu lima ratus." },
+            { id: 15, text: "Karya sastra berupa puisi pada umumnya memiliki ciri khas utama yaitu...", img: "", alt: "", 
+              options: [ {t: "Rima yang indah", c: true}, {t: "Paragraf yang panjang", c: false}, {t: "Tokoh yang jahat", c: false}, {t: "Alur yang rumit", c: false} ], 
+              explanation: "Puisi ditandai dengan penggunaan bahasa yang padat serta memiliki rima atau persajakan yang indah." },
+            { id: 16, text: "Agar mudah dipahami oleh pembaca, sebuah kalimat efektif harus menghindari penggunaan...", img: "", alt: "", 
+              options: [ {t: "Kata yang berlebihan", c: true}, {t: "Kata yang singkat", c: false}, {t: "Kata yang jelas", c: false}, {t: "Kata yang padat", c: false} ], 
+              explanation: "Kalimat efektif harus hemat kata dan menghindari kata yang berlebihan (mubazir)." },
+            { id: 17, text: "Sesuai dengan cerita yang sering kita baca, manfaat utama dari kebiasaan menabung adalah...", img: "", alt: "", 
+              options: [ {t: "Punya dana cadangan", c: true}, {t: "Uang cepat habis", c: false}, {t: "Menjadi sangat boros", c: false}, {t: "Dompet cepat rusak", c: false} ], 
+              explanation: "Menabung bermanfaat untuk mempersiapkan dana cadangan di masa depan." },
+            { id: 18, text: "Perhatikan gambar berikut. Langkah manual yang tepat untuk memeriksa keaslian uang kertas adalah...", 
+              img: "gambar/cek_uang.jpg", alt: "Gambar seseorang menerawang uang kertas di cahaya terang", 
+              options: [ {t: "Dilihat dan diraba", c: true}, {t: "Dicuci dan dijemur", c: false}, {t: "Digunting dan dilem", c: false}, {t: "Dicoret dan dilipat", c: false} ], 
+              explanation: "Cara standar mengecek keaslian uang kertas adalah 3D: Dilihat, Diraba, Ditrawang." },
+            { id: 19, text: "Sebuah kalimat baru bisa dikatakan utuh dan efektif apabila minimal memiliki...", img: "", alt: "", 
+              options: [ {t: "Subjek dan predikat", c: true}, {t: "Hanya subjek saja", c: false}, {t: "Hanya predikat saja", c: false}, {t: "Tidak ada subjek", c: false} ], 
+              explanation: "Struktur dasar sebuah kalimat efektif harus memiliki sekurang-kurangnya Subjek dan Predikat." },
+            { id: 20, text: "Dalam menulis teks prosedur tentang cara menggunakan alat, jenis kalimat yang dipakai adalah...", img: "", alt: "", 
+              options: [ {t: "Kalimat bentuk perintah", c: true}, {t: "Kalimat bentuk tanya", c: false}, {t: "Kalimat bentuk berita", c: false}, {t: "Kalimat bentuk seru", c: false} ], 
+              explanation: "Teks prosedur berisi instruksi, sehingga kaidah bahasanya menggunakan kalimat imperatif atau perintah." },
+            { id: 21, text: "Saat menyusun laporan perjalanan, peristiwa yang dialami harus ditulis secara runtut yang berarti...", img: "", alt: "", 
+              options: [ {t: "Sesuai urutan waktu", c: true}, {t: "Urutan sangat acak", c: false}, {t: "Bebas tanpa aturan", c: false}, {t: "Mulai dari akhir", c: false} ], 
+              explanation: "Laporan yang runtut atau kronologis berarti disusun sesuai urutan waktu kejadian." },
+            { id: 22, text: "Berbeda dengan teks berita, gaya bahasa yang digunakan di dalam karya puisi lebih...", img: "", alt: "", 
+              options: [ {t: "Padat dan bermakna", c: true}, {t: "Panjang dan bertele", c: false}, {t: "Sulit untuk dibaca", c: false}, {t: "Mirip dengan koran", c: false} ], 
+              explanation: "Bahasa puisi bersifat kiasan, padat, dan memiliki makna yang mendalam." },
+            { id: 23, text: "Berdasarkan gambar di bawah ini, majas yang paling tepat untuk menggambarkan anak tersebut adalah...", 
+              img: "gambar/kutu_buku.jpg", alt: "Gambar ilustrasi seorang anak sedang tersenyum membaca banyak tumpukan buku", 
+              options: [ {t: "Dia kutu buku", c: true}, {t: "Dia anak nakal", c: false}, {t: "Dia sangat malas", c: false}, {t: "Dia suka tidur", c: false} ], 
+              explanation: "'Kutu buku' adalah majas metafora untuk menyebut orang yang sangat gemar membaca." },
+            { id: 24, text: "Perhatikan gambar wanita anggun di pedesaan ini. Sebutan kiasan yang tepat untuknya adalah...", 
+              img: "gambar/kembang_desa.jpg", alt: "Gambar seorang gadis desa cantik yang sedang memegang bunga", 
+              options: [ {t: "Sang kembang desa", c: true}, {t: "Sang preman pasar", c: false}, {t: "Sang ratu jalanan", c: false}, {t: "Sang anak bawang", c: false} ], 
+              explanation: "'Kembang desa' merupakan kiasan untuk gadis yang paling cantik di sebuah desa." },
+            { id: 25, text: "Orang itu tidak disukai teman-temannya karena ia dikenal panjang tangan. Makna panjang tangan adalah...", img: "", alt: "", 
+              options: [ {t: "Suka mengambil barang", c: true}, {t: "Suka menolong teman", c: false}, {t: "Suka memberi uang", c: false}, {t: "Suka membersihkan kelas", c: false} ], 
+              explanation: "Panjang tangan adalah ungkapan negatif yang bermakna suka mencuri atau mengambil barang orang lain." }
+        ];
+
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let user = { name: '', class: '' };
+        let answeredQuestions = [];
+
+        // Fungsi Load History
+        function loadHistory() {
+            const history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            const historyList = document.getElementById('history-list');
+            if (history.length > 0) {
+                // Menampilkan riwayat tanpa menghapus (sesuai instruksi)
+                historyList.innerHTML = history.map(h => 
+                    `<div class="history-item"><b>${h.name}</b> (Kelas ${h.class}) - Skor: <b>${h.score}</b><br><small>${h.time}</small></div>`
+                ).join('');
+            } else {
+                historyList.innerHTML = "Belum ada riwayat pengerjaan.";
+            }
+        }
+
+        // Acak Array
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Mulai Kuis
+        function startQuiz() {
+            const nama = document.getElementById('nama').value.trim();
+            const kelas = document.getElementById('kelas').value.trim();
+
+            if (!nama || !kelas) {
+                alert("Harap isi nama dan kelas terlebih dahulu!");
+                return;
+            }
+
+            // Aturan 3: Reset Variabel Secara Menyeluruh
+            user.name = nama;
+            user.class = kelas;
+            score = 0;
+            currentQuestionIndex = 0;
+            
+            // Aturan 1: Sistem Flagging disiapkan dengan array kosong bernilai null
+            answeredQuestions = new Array(questions.length).fill(null); 
+            
+            // Acak soal
+            currentQuestions = shuffleArray([...questions]);
+            
+            // Acak opsi untuk setiap soal
+            currentQuestions.forEach(q => {
+                q.shuffledOptions = shuffleArray([...q.options]);
+            });
+
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('quiz-screen').style.display = 'block';
+            updateScoreDisplay();
+            loadQuestion();
+        }
+
+        function updateScoreDisplay() {
+            // Hitung jawaban benar (terfilter otomatis oleh sistem flagging array)
+            let correctAnswers = answeredQuestions.filter(ans => ans && ans.isCorrect).length;
+            
+            // Aturan 4: Perhitungan Berbasis Persentase
+            let calculatedScore = (correctAnswers / currentQuestions.length) * 100;
+            
+            // Aturan 2: Penggunaan Fungsi Pembatas (limiter) agar tidak lebih dari 100
+            score = Math.min(Math.round(calculatedScore), 100); 
+
+            document.getElementById('live-score').textContent = `Skor Sementara: ${score}`;
+        }
+
+        // Render Soal
+        function loadQuestion() {
+            const q = currentQuestions[currentQuestionIndex];
+            document.getElementById('q-number').textContent = `Soal ${currentQuestionIndex + 1} / ${currentQuestions.length}`;
+            
+            let html = ``;
+            if (q.img) {
+                html += `<img src="${q.img}" alt="${q.alt}" class="question-image">`;
+            }
+            html += `<div class="question-text">${q.text}</div>`;
+            html += `<div class="options" id="options-container"></div>`;
+            
+            document.getElementById('question-container').innerHTML = html;
+            
+            const optionsContainer = document.getElementById('options-container');
+            const explanationDiv = document.getElementById('explanation');
+            explanationDiv.style.display = 'none';
+            explanationDiv.innerHTML = `<b>Pembahasan:</b> ${q.explanation}`;
+
+            let hasAnswered = answeredQuestions[currentQuestionIndex] !== null;
+
+            q.shuffledOptions.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = `${String.fromCharCode(65 + index)}. ${opt.t}`;
+                
+                if (hasAnswered) {
+                    btn.disabled = true;
+                    if (answeredQuestions[currentQuestionIndex].text === opt.t) {
+                        btn.classList.add(opt.c ? 'correct' : 'wrong');
+                    }
+                    if (opt.c && !answeredQuestions[currentQuestionIndex].isCorrect) {
+                        btn.style.border = "2px solid #28a745";
+                        btn.style.color = "#28a745";
+                    }
+                } else {
+                    btn.onclick = () => selectAnswer(btn, opt);
+                }
+                optionsContainer.appendChild(btn);
+            });
+
+            if (hasAnswered) {
+                explanationDiv.style.display = 'block';
+            }
+
+            updateNavButtons();
+        }
+
+        // Pilih Jawaban
+        function selectAnswer(btn, opt) {
+            const optionsDiv = document.getElementById('options-container');
+            const buttons = optionsDiv.getElementsByTagName('button');
+            
+            for (let b of buttons) {
+                b.disabled = true;
+            }
+
+            // Set Flag jawaban
+            answeredQuestions[currentQuestionIndex] = { text: opt.t, isCorrect: opt.c };
+
+            if (opt.c) {
+                btn.classList.add('correct');
+            } else {
+                btn.classList.add('wrong');
+                for (let b of buttons) {
+                    if (b.textContent.substring(3) === currentQuestions[currentQuestionIndex].shuffledOptions.find(o => o.c).t) {
+                        b.style.border = "2px solid #28a745";
+                        b.style.color = "#28a745";
+                    }
+                }
+            }
+
+            document.getElementById('explanation').style.display = 'block';
+            updateScoreDisplay();
+            updateNavButtons();
+        }
+
+        // Navigasi
+        function updateNavButtons() {
+            const hasAnswered = answeredQuestions[currentQuestionIndex] !== null;
+            
+            document.getElementById('btn-prev').style.display = currentQuestionIndex > 0 ? 'block' : 'none';
+            
+            const btnNext = document.getElementById('btn-next');
+            const btnFinish = document.getElementById('btn-finish');
+
+            if (currentQuestionIndex < currentQuestions.length - 1) {
+                btnNext.style.display = hasAnswered ? 'block' : 'none';
+                btnFinish.style.display = 'none';
+            } else {
+                btnNext.style.display = 'none';
+                btnFinish.style.display = hasAnswered ? 'block' : 'none';
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < currentQuestions.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadQuestion();
+            }
+        }
+
+        // Selesai Kuis & Komunikasi ke Rekap
+        function finishQuiz() {
+            updateScoreDisplay();
+            
+            const sessionData = {
+                name: user.name,
+                class: user.class,
+                score: score,
+                quiz_id: QUIZ_ID, // Tag identitas penting untuk direkap
+                time: new Date().toLocaleString('id-ID')
+            };
+
+            // Simpan ke local storage internal halaman ini (tanpa batas pemotongan array agar histori aman)
+            const history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+            history.unshift(sessionData);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(history)); 
+
+            // ==========================================
+            // KOMUNIKASI DENGAN FILE rekap.html 
+            // ==========================================
+            
+            // Metode 1: Simpan ke Global LocalStorage (Dapat diakses oleh file HTML lain di domain yang sama)
+            let sharedRekap = JSON.parse(localStorage.getItem("global_rekap_skor")) || [];
+            sharedRekap.unshift(sessionData);
+            localStorage.setItem("global_rekap_skor", JSON.stringify(sharedRekap));
+
+            // Metode 2: Menggunakan postMessage jika file ini dibuka di dalam iframe oleh rekap.html
+            const messagePayload = {
+                type: 'QUIZ_SUBMITTED',
+                payload: sessionData
+            };
+            if (window.opener) {
+                window.opener.postMessage(messagePayload, '*');
+            } else if (window.parent !== window) {
+                window.parent.postMessage(messagePayload, '*');
+            }
+
+            alert(`Kuis Selesai!\nNama: ${user.name}\nKelas: ${user.class}\nSkor Akhir: ${score}`);
+            
+            // Reset ke layar awal
+            document.getElementById('quiz-screen').style.display = 'none';
+            document.getElementById('login-screen').style.display = 'block';
+            document.getElementById('nama').value = '';
+            document.getElementById('kelas').value = '';
+            loadHistory();
+        }
+
+        // Load history saat halaman dibuka
+        window.onload = loadHistory;
+    </script>
+</body>
+</html>
