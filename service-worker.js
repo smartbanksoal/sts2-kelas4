@@ -1,5 +1,5 @@
 // Nama cache versi
-const CACHE_NAME = 'sts-kelas-4-v1';
+const CACHE_NAME = 'sts-kelas-4-v2';
 
 const urlsToCache = [
  './index.html',
@@ -52,6 +52,10 @@ const urlsToCache = [
   '/soal/gambar/img_meluncur_air.jpg',
   '/soal/gambar/img_alat_simpai.jpg',
   '/soal/gambar/img_main_jaringikan.jpg',
+  '/soal/gambar/jatuh-sepeda.jpg',
+  '/soal/gambar/kota-mekah.jpg',
+  '/soal/gambar/masuk-rumah.jpg',
+  '/soal/gambar/perahu-nuh.jpg',
   '/soal/gambar/img_langkah_rapat.jpg'
 ];
 
