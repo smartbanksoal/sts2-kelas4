@@ -254,11 +254,11 @@
         document.addEventListener('paste', (e) => { e.preventDefault(); });
         document.addEventListener('cut', (e) => { e.preventDefault(); });
 
-        // IDENTIFIKATOR UNIK - Mencegah bentrok (nyasar) dengan modul kuis lainnya
+        // IDENTIFIKATOR UNIK
         const QUIZ_ID = "IPAS-STS-K4-S2-HOTS";
         const STORAGE_KEY = `quiz_${QUIZ_ID}_history`;
 
-        // Data Soal (25 Soal, 5 Bergambar)
+        // Data Soal (25 Soal Lengkap)
         const masterQuestions = [
             {
                 text: "Perhatikan gambar kumpulan hewan berikut ini! Berdasarkan variasi yang terlihat, gambar tersebut menunjukkan keanekaragaman hayati tingkat apa?",
@@ -423,7 +423,6 @@
         let score = 0;
         let studentData = {};
 
-        // Acak Array (Fisher-Yates)
         function shuffle(array) {
             let currentIndex = array.length, randomIndex;
             while (currentIndex != 0) {
@@ -434,7 +433,6 @@
             return array;
         }
 
-        // Load History Tanpa Dihapus
         function loadHistory() {
             const history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
             const historyList = document.getElementById('history-list');
@@ -443,7 +441,6 @@
                 historyList.innerHTML = '<li>Belum ada juara yang tercatat. Ayo jadi yang pertama!</li>';
             } else {
                 history.forEach(item => {
-                    // Gunakan item.time agar selaras dengan object yang dikirim ke rekap
                     historyList.innerHTML += `<li>👨‍🎓 <strong>${item.name}</strong> (Kelas ${item.class}) - Skor: <strong>${item.score}</strong> <br><small>🕒 ${item.time}</small></li>`;
                 });
             }
@@ -460,36 +457,27 @@
                 return;
             }
 
-            // Aturan 3: Reset Variabel Secara Menyeluruh
             studentData = { name: nameInput, class: classInput };
             currentIdx = 0;
             score = 0;
             
-            // Siapkan Soal (dan reset flag jawaban)
             let clonedQuestions = JSON.parse(JSON.stringify(masterQuestions));
             quizQuestions = shuffle(clonedQuestions).map(q => {
                 let opts = shuffle([...q.options]);
-                return { ...q, options: opts, isAnswered: false, userChoice: null }; // isAnswered sebagai flag
+                return { ...q, options: opts, isAnswered: false, userChoice: null }; 
             });
 
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('quiz-screen').style.display = 'block';
             
-            updateScoreDisplay(); // Render skor 0 di awal
+            updateScoreDisplay(); 
             showQuestion();
         }
 
-        // Kalkulasi Skor dengan Limiter
         function updateScoreDisplay() {
-            // Aturan 1: Hitung jawaban benar berdasarkan flag array yang sudah dikunci (isAnswered)
             let correctAnswers = quizQuestions.filter(q => q.isAnswered && q.userChoice === q.answer).length;
-            
-            // Aturan 4: Perhitungan Berbasis Persentase
             let calculatedScore = (correctAnswers / quizQuestions.length) * 100;
-            
-            // Aturan 2: Penggunaan Fungsi Pembatas (limiter)
             score = Math.min(Math.round(calculatedScore), 100);
-            
             document.getElementById('current-score').innerText = score;
         }
 
@@ -498,7 +486,6 @@
             document.getElementById('question-number').innerText = `Soal ${currentIdx + 1} / 25`;
             document.getElementById('question-text').innerText = q.text;
 
-            // Gambar
             const imgEl = document.getElementById('question-image');
             if (q.image) {
                 imgEl.src = q.image;
@@ -507,7 +494,6 @@
                 imgEl.style.display = 'none';
             }
 
-            // Opsi Jawaban
             const optionsContainer = document.getElementById('options-container');
             optionsContainer.innerHTML = '';
 
@@ -516,7 +502,6 @@
                 btn.className = 'option-btn';
                 btn.innerText = opt;
                 
-                // Jika sudah dijawab sebelumnya (Membaca flag)
                 if (q.isAnswered) {
                     btn.disabled = true;
                     if (opt === q.answer) btn.classList.add('correct');
@@ -527,7 +512,6 @@
                 optionsContainer.appendChild(btn);
             });
 
-            // Penjelasan
             const expBox = document.getElementById('explanation-box');
             if (q.isAnswered) {
                 document.getElementById('explanation-text').innerText = q.explanation;
@@ -536,7 +520,6 @@
                 expBox.style.display = 'none';
             }
 
-            // Navigasi
             document.getElementById('btn-prev').style.visibility = currentIdx > 0 ? 'visible' : 'hidden';
             
             if (currentIdx === quizQuestions.length - 1) {
@@ -550,8 +533,6 @@
 
         function selectAnswer(btn, selectedOpt) {
             const q = quizQuestions[currentIdx];
-            
-            // Kunci jawaban (Flagging)
             q.isAnswered = true;
             q.userChoice = selectedOpt;
 
@@ -567,7 +548,6 @@
                 btn.classList.add('wrong');
             }
 
-            // Hitung ulang dan perbarui tampilan skor
             updateScoreDisplay();
 
             document.getElementById('explanation-text').innerText = q.explanation;
@@ -595,37 +575,46 @@
         }
 
         function finishQuiz() {
-            updateScoreDisplay(); // Pastikan kalkulasi terakhir akurat sebelum menyimpan
+            updateScoreDisplay(); 
 
             const now = new Date();
             const timeString = now.toLocaleDateString('id-ID') + ' ' + now.toLocaleTimeString('id-ID');
 
+            // --- Simpan riwayat untuk halaman Kuis ini saja ---
             const sessionData = {
                 name: studentData.name,
                 class: studentData.class,
                 score: score,
-                quiz_id: QUIZ_ID, // Identitas kuis
+                quiz_id: QUIZ_ID,
                 time: timeString
             };
 
-            // Simpan riwayat di halaman ini secara utuh
             const history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-            history.unshift(sessionData); // Tambah di paling atas
+            history.unshift(sessionData); 
             localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
 
             // ==========================================
             // KOMUNIKASI DENGAN FILE rekap.html 
             // ==========================================
             
-            // Metode 1: Simpan ke Global LocalStorage
-            let sharedRekap = JSON.parse(localStorage.getItem("global_rekap_skor")) || [];
-            sharedRekap.unshift(sessionData);
-            localStorage.setItem("global_rekap_skor", JSON.stringify(sharedRekap));
+            // Format data yang benar-benar dibutuhkan oleh rekap.html
+            const rekapData = {
+                nama: studentData.name,
+                kelas: studentData.class,
+                mapel: "IPAS STS Kelas 4", // Ditampilkan pada kolom mata pelajaran
+                nilai: score,
+                waktu: timeString
+            };
 
-            // Metode 2: Menggunakan postMessage jika ini adalah Iframe
+            // Simpan langsung ke key 'dataKuis' agar tabel di rekap.html bisa membaca data
+            let sharedRekap = JSON.parse(localStorage.getItem("dataKuis")) || [];
+            sharedRekap.unshift(rekapData);
+            localStorage.setItem("dataKuis", JSON.stringify(sharedRekap));
+
+            // Optional: Menggunakan postMessage jika file berada di Iframe
             const messagePayload = {
                 type: 'QUIZ_SUBMITTED',
-                payload: sessionData
+                payload: rekapData
             };
             if (window.opener) {
                 window.opener.postMessage(messagePayload, '*');

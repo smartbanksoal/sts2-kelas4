@@ -96,7 +96,7 @@
             color: white;
             border: none;
             padding: 10px 20px;
-            border-radius: 50px; /* Ramping */
+            border-radius: 50px;
             cursor: pointer;
             font-size: 1rem;
             transition: all 0.3s ease;
@@ -193,9 +193,17 @@
             justify-content: space-between;
             margin-top: 25px;
         }
+
+        /* Responsif untuk HP */
+        @media (max-width: 600px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
-<body oncontextmenu="return false;"> <header id="app-header">
+<body oncontextmenu="return false;"> 
+    <header id="app-header">
         Kode Soal: PJOK-STS-K4-S2-HOTS
     </header>
 
@@ -205,6 +213,8 @@
             
             <div style="text-align: center; margin-bottom: 20px;">
                 <a href="../index.html" class="btn">Kembali ke Home</a>
+                <!-- Tombol ini bisa mengarahkan ke halaman rekap.html -->
+                <a href="../rekap.html" class="btn" style="background-color: var(--secondary);">Lihat Rekap Nilai</a>
             </div>
 
             <div class="form-group">
@@ -218,7 +228,7 @@
             
             <button class="btn" onclick="mulaiKuis()" style="width: 100%; margin-top: 10px; font-size: 1.1rem;">Mulai Kuis</button>
 
-            <h3 style="margin-top: 30px; border-bottom: 2px solid var(--secondary); padding-bottom: 5px;">Riwayat Skor Tertinggi</h3>
+            <h3 style="margin-top: 30px; border-bottom: 2px solid var(--secondary); padding-bottom: 5px;">Riwayat Skor Tertinggi (Lokal)</h3>
             <table class="history-table" id="history-table">
                 <thead>
                     <tr>
@@ -259,13 +269,16 @@
             <div style="font-size: 3rem; font-weight: bold; color: var(--success); margin: 20px 0;">
                 Skor: <span id="final-score">0</span>
             </div>
-            <button class="btn" onclick="kembaliKeLogin()">Selesai & Simpan</button>
+            <p style="color: var(--success); font-weight: bold;">Nilai berhasil disimpan di sistem rekap!</p>
+            <button class="btn" onclick="kembaliKeLogin()">Kembali</button>
+            <button class="btn" style="background-color: var(--secondary);" onclick="window.location.href='../rekap.html'">Cek Rekap Nilai</button>
         </div>
     </div>
 
     <footer>
        Dibuat dengan ❤️ untuk generasi cerdas bangsa.<br>
-        Oleh : Dwi Endrasto
+       Produk ini asli jika didapatkan/dibeli melalui <a href="https://lynk.id/smartbanksoal" style="color:var(--secondary);">https://lynk.id/smartbanksoal</a><br>
+       Oleh : Dwi Endrasto (SmartBankSoal)
     </footer>
 
     <script>
@@ -507,13 +520,13 @@
             }
         ];
 
-        // Unique Data Key untuk mencegah skor bocor antar kuis
+        // Unique Data Key untuk riwayat khusus halaman ini
         const STORAGE_KEY = 'smartbanksoal_history_pjok_sts_k4';
         
         let state = {
             nama: '', kelas: '', 
             questions: [], currentIdx: 0,
-            answersFlag: [], // Sistem Flagging (menandai soal yang sudah dijawab)
+            answersFlag: [], 
             correctCount: 0
         };
 
@@ -528,7 +541,7 @@
             return array;
         }
 
-        // Tampilkan Riwayat di Login
+        // Tampilkan Riwayat di Login (Lokal per soal)
         function tampilkanRiwayat() {
             const history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
             const tbody = document.getElementById('history-body');
@@ -558,7 +571,6 @@
                 return;
             }
 
-            // Total Reset Variabel
             state.nama = nama;
             state.kelas = kelas;
             state.correctCount = 0;
@@ -569,13 +581,12 @@
             let acakSoal = bankSoal.map(s => {
                 return {
                     q: s.q, img: s.img, p: s.p,
-                    o: shuffle([...s.o]) // Posisi pilihan diacak
+                    o: shuffle([...s.o])
                 }
             });
             state.questions = shuffle(acakSoal);
 
             document.getElementById('login-screen').classList.remove('active');
-            document.getElementById('quiz-screen').classList.active = true;
             document.getElementById('quiz-screen').classList.add('active');
             
             muatSoal();
@@ -583,7 +594,6 @@
         }
 
         function muatSoal() {
-            const soalDiv = document.getElementById('quiz-screen');
             const data = state.questions[state.currentIdx];
             
             document.getElementById('question-number').innerText = `Soal ${state.currentIdx + 1} / ${state.questions.length}`;
@@ -607,7 +617,6 @@
                 btn.className = 'option-btn';
                 btn.innerText = String.fromCharCode(65 + idx) + ". " + opt.t;
                 
-                // Jika soal ini sudah pernah dijawab (Sistem Flagging)
                 if(state.answersFlag[state.currentIdx]) {
                     btn.disabled = true;
                     if(opt.c) btn.classList.add('correct');
@@ -634,7 +643,6 @@
         }
 
         function cekJawaban(clickedBtn, isCorrect, container) {
-            // Penggunaan Fungsi Pembatas & Flagging (Mencegah multi-click / bocor skor)
             if(state.answersFlag[state.currentIdx]) return; 
             state.answersFlag[state.currentIdx] = true;
 
@@ -643,8 +651,7 @@
 
             for(let btn of buttons) {
                 btn.disabled = true;
-                // Cari jawaban mana yang sebenarnya benar
-                const textAns = btn.innerText.substring(3); // Hapus "A. "
+                const textAns = btn.innerText.substring(3); 
                 const isThisAnsCorrect = data.o.find(x => x.t === textAns).c;
                 if(isThisAnsCorrect) btn.classList.add('correct');
             }
@@ -655,19 +662,15 @@
                 clickedBtn.classList.add('wrong');
             }
 
-            // Tampilkan pembahasan
             const pemb = document.getElementById('pembahasan-container');
             pemb.innerText = "Pembahasan: " + data.p;
             pemb.style.display = 'block';
 
             updateScoreUI();
-            
-            // Buka akses tombol selanjutnya/selesai
             document.getElementById('btn-next').disabled = false;
         }
 
         function updateScoreUI() {
-            // Perhitungan Berbasis Persentase + Limiter Maksimal 100
             let hitungSkor = Math.round((state.correctCount / state.questions.length) * 100);
             let limitSkor = Math.min(100, hitungSkor); 
             document.getElementById('current-score').innerText = limitSkor;
@@ -693,11 +696,11 @@
             document.getElementById('res-kelas').innerText = state.kelas;
             document.getElementById('final-score').innerText = skorAkhir;
 
-            // Simpan ke Local Storage (Tanpa hapus history)
-            let history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
             let now = new Date();
             let formatWaktu = now.toLocaleDateString('id-ID') + " " + now.toLocaleTimeString('id-ID');
-            
+
+            // 1. Simpan ke Local Storage Internal (Untuk tabel riwayat di layar login kuis ini)
+            let history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
             history.push({
                 nama: state.nama,
                 kelas: state.kelas,
@@ -706,7 +709,18 @@
             });
             localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
 
-            // Komunikasi dengan rekap.html via PostMessage (Sesuai instruksi)
+            // 2. SIMPAN KE REKAP GLOBAL (Agar bisa dibaca oleh file rekap.html)
+            let dataRekapGuru = JSON.parse(localStorage.getItem('dataKuis')) || [];
+            dataRekapGuru.push({
+                nama: state.nama,
+                kelas: state.kelas,
+                mapel: 'PJOK Kls 4 STS', 
+                nilai: skorAkhir,
+                waktu: formatWaktu
+            });
+            localStorage.setItem('dataKuis', JSON.stringify(dataRekapGuru));
+
+            // 3. Komunikasi dengan iframe (postMessage) dipertahankan sebagai opsi backup
             try {
                 window.parent.postMessage({
                     type: 'QUIZ_RESULT',

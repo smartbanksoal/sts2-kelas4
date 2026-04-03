@@ -220,7 +220,7 @@
             <a href="../index.html" class="btn btn-home">Kembali ke Home</a>
 
             <div class="history-section">
-                <h3>Riwayat Pencapaian Skor</h3>
+                <h3>Riwayat Pencapaian Skor (Lokal)</h3>
                 <ul id="history-list" style="padding-left: 0;"></ul>
             </div>
         </div>
@@ -241,13 +241,13 @@
         <div id="result-screen" style="display: none; text-align: center;">
             <h2 class="login-title">Kuis Selesai!</h2>
             <p style="font-size: 1.2rem;">Skor Akhir Anda: <strong id="final-score" style="font-size: 1.5rem; color: var(--primary);">0</strong></p>
-            <button class="btn btn-home" onclick="location.reload()">Kembali ke Halaman Awal</button>
+            <button class="btn btn-home" onclick="location.reload()">Kerjakan Lagi</button>
+            <a href="../index.html" class="btn btn-home" style="margin-top: 10px;">Kembali ke Home</a>
         </div>
     </div>
 
     <div class="footer">
         &copy; <span id="year"></span> Oleh: Dwi Endrasto | Dibuat dengan ❤️ untuk generasi cerdas bangsa<br>
-        
     </div>
 
     <script>
@@ -264,8 +264,8 @@
         const QUIZ_ID = "JWA-STS-K4-S2-HOTS";
         const STORAGE_KEY = `quiz_${QUIZ_ID}_history`;
 
-        // --- DATA SOAL ---
-        const rawQuestions = [
+        // --- DATA 25 SOAL ---
+        const allQuestions = [
             {
                 img: "gambar/soal1_wayang.jpg", imgAlt: "Gambar Wayang Kulit Werkudara",
                 text: "Sapa jeneng paraga wayang ing gambar kasebut?",
@@ -305,10 +305,7 @@
             { text: "Tembang Gambuh lumrahe menehi pitutur ngenani?", choices: [ { text: "Sopan santun", isCorrect: false }, { text: "Tindak tanduk", isCorrect: true }, { text: "Golek bandha", isCorrect: false }, { text: "Perang tandhing", isCorrect: false } ], explanation: "Pembahasan: Watak tembang Gambuh cocok kanggo aweh pitutur babagan tindak tanduk." },
             { text: "Ukara 'Kula badhe kesah' kalebu basa?", choices: [ { text: "Ngoko lugu", isCorrect: false }, { text: "Ngoko alus", isCorrect: false }, { text: "Krama lugu", isCorrect: true }, { text: "Krama alus", isCorrect: false } ], explanation: "Pembahasan: 'Kula badhe kesah' kuwi krama lugu (kanggo awake dhewe)." },
             { text: "Bapak maca koran. Krama aluse kepriye?", choices: [ { text: "Bapak maos", isCorrect: true }, { text: "Bapak moco", isCorrect: false }, { text: "Bapak ningali", isCorrect: false }, { text: "Bapak nyawang", isCorrect: false } ], explanation: "Pembahasan: Tembung maca yen dikramakake alus dadi maos." },
-            { text: "Basa kramane tembung 'adus' yaiku apa?", choices: [ { text: "Tindak siram", isCorrect: true }, { text: "Adus toya", isCorrect: false }, { text: "Lunga adus", isCorrect: false }, { text: "Guyang banyu", isCorrect: false } ], explanation: "Pembahasan: Krama inggile adus iku siram." }
-        ];
-
-        const additionalQuestions = [
+            { text: "Basa kramane tembung 'adus' yaiku apa?", choices: [ { text: "Tindak siram", isCorrect: true }, { text: "Adus toya", isCorrect: false }, { text: "Lunga adus", isCorrect: false }, { text: "Guyang banyu", isCorrect: false } ], explanation: "Pembahasan: Krama inggile adus iku siram." },
             { text: "Tembung sanepa 'pait madu' tegese kepriye?", choices: [{text: "Manis banget", isCorrect: true}, {text: "Pait banget", isCorrect: false}, {text: "Asem banget", isCorrect: false}, {text: "Legi sithik", isCorrect: false}], explanation: "Pembahasan: Sanepa iku unen-unen sing tegese kosok balen. Pait madu tegese manis banget." },
             { text: "Tembung camboran 'nagasari' wujude panganan apa?", choices: [{text: "Jajan pasar", isCorrect: true}, {text: "Sega tumpeng", isCorrect: false}, {text: "Jangan lodeh", isCorrect: false}, {text: "Sambel trasi", isCorrect: false}], explanation: "Pembahasan: Nagasari iku jeneng jajan pasar (camboran wutuh)." },
             { text: "Sapa asmane ibune Raden Werkudara?", choices: [{text: "Dewi Kunthi", isCorrect: true}, {text: "Dewi Madrim", isCorrect: false}, {text: "Dewi Sinta", isCorrect: false}, {text: "Dewi Arimbi", isCorrect: false}], explanation: "Pembahasan: Ibune Pandhawa (Puntadewa, Werkudara, Janaka) yaiku Dewi Kunthi." },
@@ -318,16 +315,8 @@
             { text: "Yen ketemu guru wayah esuk ngucapake?", choices: [{text: "Sugeng enjing", isCorrect: true}, {text: "Sugeng siang", isCorrect: false}, {text: "Sugeng sonten", isCorrect: false}, {text: "Sugeng dalu", isCorrect: false}], explanation: "Pembahasan: Sapa aruh wektu esuk nganggo basa krama yaiku sugeng enjing." },
             { text: "Sadurunge mlebu omahe wong liya kudu?", choices: [{text: "Nothok lawang", isCorrect: true}, {text: "Mlebu langsung", isCorrect: false}, {text: "Mbuwang sampah", isCorrect: false}, {text: "Turu njaba", isCorrect: false}], explanation: "Pembahasan: Tata krama bertamu iku kudu nothok lawang lan uluk salam." },
             { text: "Matur marang simbah kudu nggunakake basa?", choices: [{text: "Krama alus", isCorrect: true}, {text: "Ngoko lugu", isCorrect: false}, {text: "Krama lugu", isCorrect: false}, {text: "Ngoko alus", isCorrect: false}], explanation: "Pembahasan: Marang wong sing luwih tuwa kudu nggunakake krama alus (inggil)." },
-            { text: "Sikep awak nalika matur wong tuwa?", choices: [{text: "Ndhungkluk sopan", isCorrect: true}, {text: "Mendelik mripat", isCorrect: false}, {text: "Tolak cangkeng", isCorrect: false}, {text: "Mungkur geger", isCorrect: false}], explanation: "Pembahasan: Sikep (gestur) sing santun yaiku ndhungkluk utawa ngajeni." },
-            { text: "Teks narasi iku nyritakake babagan apa?", choices: [{text: "Urutan kedadean", isCorrect: true}, {text: "Wujud barang", isCorrect: false}, {text: "Panyaruwe kahanan", isCorrect: false}, {text: "Gagasan utama", isCorrect: false}], explanation: "Pembahasan: Teks narasi nyritakake prastawa utawa kedadean kanthi urut." },
-            { text: "Teks sing nggambarake kahanan kanthi cetha?", choices: [{text: "Teks deskripsi", isCorrect: true}, {text: "Teks narasi", isCorrect: false}, {text: "Teks argumentasi", isCorrect: false}, {text: "Teks persuasi", isCorrect: false}], explanation: "Pembahasan: Teks deskripsi tujuane nggambarake obyek supaya pamaca kaya ngalami dhewe." },
-            { text: "Sandhangan swara 'i' ing aksara Jawa?", choices: [{text: "Wulu cilik", isCorrect: true}, {text: "Suku ngisor", isCorrect: false}, {text: "Taling kiwa", isCorrect: false}, {text: "Pepet dhuwur", isCorrect: false}], explanation: "Pembahasan: Sandhangan swara (i) arane wulu." },
-            { text: "Panyigeg wanda kanggo mateni aksara 'r'?", choices: [{text: "Layar dhuwur", isCorrect: true}, {text: "Cecak dhuwur", isCorrect: false}, {text: "Wignyan mburi", isCorrect: false}, {text: "Pangkon mburi", isCorrect: false}], explanation: "Pembahasan: Layar digunakake kanggo panyigeg wanda (r)." },
-            { text: "Tembang Gambuh asale saka tembung apa?", choices: [{text: "Jumbuh cocog", isCorrect: true}, {text: "Pisah adoh", isCorrect: false}, {text: "Lunga adoh", isCorrect: false}, {text: "Nesu banget", isCorrect: false}], explanation: "Pembahasan: Gambuh asale saka tembung jumbuh kang tegese cocog utawa gathuk." }
+            { text: "Sikep awak nalika matur wong tuwa?", choices: [{text: "Ndhungkluk sopan", isCorrect: true}, {text: "Mendelik mripat", isCorrect: false}, {text: "Tolak cangkeng", isCorrect: false}, {text: "Mungkur geger", isCorrect: false}], explanation: "Pembahasan: Sikep (gestur) sing santun yaiku ndhungkluk utawa ngajeni." }
         ];
-
-        // Penggabungan array aman untuk mencegah hilangnya data
-        const allQuestions = [...rawQuestions.slice(0, 10), rawQuestions[14], ...additionalQuestions];
 
         // --- VARIABEL SISTEM ---
         let questions = [];
@@ -475,38 +464,33 @@
             const date = new Date();
             const timeString = `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes().toString().padStart(2, '0')}`;
             
-            const sessionData = {
+            // 1. Simpan di Lokal untuk history tampilan awal kuis
+            const localSessionData = {
                 name: userName,
                 class: userClass,
                 score: score,
-                quiz_id: QUIZ_ID, // Tag khusus
                 time: timeString
             };
 
-            // 1. Simpan di Lokal (Tanpa hapus history lama)
             let history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-            history.unshift(sessionData); // Letakkan di paling atas
+            history.unshift(localSessionData); // Letakkan di paling atas
             localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
 
             // ==========================================
             // 2. KOMUNIKASI DENGAN FILE rekap.html 
             // ==========================================
-            
-            // Metode A: Global LocalStorage
-            let sharedRekap = JSON.parse(localStorage.getItem("global_rekap_skor")) || [];
-            sharedRekap.unshift(sessionData);
-            localStorage.setItem("global_rekap_skor", JSON.stringify(sharedRekap));
-
-            // Metode B: postMessage (Untuk iframe)
-            const messagePayload = {
-                type: 'QUIZ_SUBMITTED',
-                payload: sessionData
+            // Menggunakan format yang terbaca oleh rekap.html (nama, kelas, mapel, nilai, waktu)
+            const rekapData = {
+                nama: userName,
+                kelas: userClass,
+                mapel: `Bahasa Jawa (${QUIZ_ID})`,
+                nilai: score,
+                waktu: timeString
             };
-            if (window.opener) {
-                window.opener.postMessage(messagePayload, '*');
-            } else if (window.parent !== window) {
-                window.parent.postMessage(messagePayload, '*');
-            }
+
+            let sharedRekap = JSON.parse(localStorage.getItem("dataKuis")) || [];
+            sharedRekap.push(rekapData); // Push agar data di rekap berurutan dengan benar
+            localStorage.setItem("dataKuis", JSON.stringify(sharedRekap));
         }
 
         function loadHistory() {

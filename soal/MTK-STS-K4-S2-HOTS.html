@@ -283,7 +283,6 @@
         });
 
         // --- 2. DATA SOAL (25 Soal Sesuai Kisi-kisi) ---
-        // Jumlah kata tiap opsi dibuat sama untuk trik pilihan jawaban.
         const originalQuestions = [
             // 5 SOAL BERGAMBAR
             {
@@ -331,7 +330,7 @@
                 explanation: "Bangun memiliki panjang 3 kubus, lebar 3 kubus, dan tinggi 2 kubus. Volume = 3 x 3 x 2 = 18 kubus satuan.",
                 indikator: "4.4 Mengukur volume menggunakan satuan baku"
             },
-            // 20 SOAL TEKS (Ubah Benar/Salah & Menjodohkan jadi Pilihan Ganda sesuai instruksi)
+            // 20 SOAL TEKS
             {
                 text: "Sebuah papan tulis akan diukur luasnya menggunakan jengkal tangan Andi. Pengukuran ini termasuk ke dalam jenis pengukuran menggunakan satuan...",
                 options: ["Sangat baku", "Tidak baku", "Paling baku", "Lebih baku"],
@@ -404,7 +403,7 @@
             },
             {
                 text: "Andi mengestimasi luas meja dengan menutupnya menggunakan telapak tangan. Telapak tangan setiap teman Andi ukurannya berbeda. Ini menunjukkan bahwa telapak tangan adalah...",
-                options: ["Satuan baku", "Satuan ukur", "Satuan pas", "Satuan takbaku"], // 2 words
+                options: ["Satuan baku", "Satuan ukur", "Satuan pas", "Satuan takbaku"],
                 answer: "Satuan takbaku",
                 explanation: "Alat ukur yang nilainya bisa berbeda jika dilakukan oleh orang yang berbeda disebut sebagai alat ukur satuan tidak baku.",
                 indikator: "4.2 Mengestimasi luas satuan tidak baku"
@@ -432,7 +431,7 @@
             },
             {
                 text: "Manakah di antara pernyataan berikut yang merupakan ciri khusus dari sebuah bangun trapesium sama kaki yang membedakannya dari bangun jajargenjang?",
-                options: ["Sisi sejajar", "Sudut siku", "Sisi miring", "Kaki sejajar"], // 2 words
+                options: ["Sisi sejajar", "Sudut siku", "Sisi miring", "Kaki sejajar"],
                 answer: "Sisi miring",
                 explanation: "Trapesium sama kaki memiliki sepasang sisi sejajar dan dua sisi miring (kaki) yang sama panjang, tidak seperti jajargenjang.",
                 indikator: "5.1 Mendeskripsikan bangun datar"
@@ -478,7 +477,6 @@
         const KODE_SOAL = "MTK-STS-K4-S2-HOTS";
         const STORAGE_KEY = "history_" + KODE_SOAL;
         
-        // 1. Reset Variabel Secara Menyeluruh (Mencegah skor > 100)
         let currentQuestions = [];
         let currentQuestionIndex = 0;
         let correctAnswers = 0;
@@ -517,7 +515,6 @@
             }
         }
 
-        // Jalankan saat load
         window.onload = renderHistory;
 
         function startQuiz() {
@@ -529,7 +526,6 @@
                 return;
             }
 
-            // Reset dan Acak Soal
             currentQuestions = shuffleArray(JSON.parse(JSON.stringify(originalQuestions)));
             currentQuestionIndex = 0;
             correctAnswers = 0;
@@ -545,7 +541,6 @@
             const q = currentQuestions[currentQuestionIndex];
             document.getElementById("questionText").innerText = `${currentQuestionIndex + 1}. ${q.text}`;
             
-            // Handle Gambar
             const imgEl = document.getElementById("questionImage");
             if (q.img) {
                 imgEl.src = q.img;
@@ -555,7 +550,6 @@
                 imgEl.style.display = "none";
             }
 
-            // Handle Opsi (Acak opsi per soal)
             const optionsContainer = document.getElementById("optionsContainer");
             optionsContainer.innerHTML = "";
             document.getElementById("explanationBox").style.display = "none";
@@ -570,7 +564,6 @@
                 optionsContainer.appendChild(btn);
             });
 
-            // Restore state jika sudah pernah dijawab (untuk tombol prev/next)
             if (userAnswers[currentQuestionIndex]) {
                 const savedAns = userAnswers[currentQuestionIndex];
                 const btns = optionsContainer.getElementsByClassName("option-btn");
@@ -591,25 +584,21 @@
         function selectAnswer(btnElement, selectedOpt, correctOpt, explanation) {
             const qIndex = currentQuestionIndex;
             
-            // Catat jawaban
             userAnswers[qIndex] = selectedOpt;
             if(selectedOpt === correctOpt) {
                 correctAnswers++;
                 btnElement.classList.add("correct");
             } else {
                 btnElement.classList.add("wrong");
-                // Cari dan warnai hijau tombol yang benar
                 const btns = document.getElementById("optionsContainer").getElementsByClassName("option-btn");
                 for(let b of btns) {
                     if(b.innerText === correctOpt) b.classList.add("correct");
                 }
             }
 
-            // Disable semua opsi
             const btns = document.getElementById("optionsContainer").getElementsByClassName("option-btn");
             for(let b of btns) b.disabled = true;
 
-            // Tampilkan pembahasan
             document.getElementById("explanationText").innerText = explanation;
             document.getElementById("explanationBox").style.display = "block";
 
@@ -617,10 +606,8 @@
         }
 
         function updateScoreDisplay() {
-            // 2 & 4. Fungsi Pembatas dan Perhitungan Berbasis Persentase
             let maxTotal = currentQuestions.length;
             let percentScore = (correctAnswers / maxTotal) * 100;
-            // 3. Limiter agar absolut tidak lebih dari 100
             let finalTempScore = Math.min(100, Math.round(percentScore));
             document.getElementById("tempScore").innerText = finalTempScore;
         }
@@ -648,10 +635,9 @@
 
         function finishQuiz() {
             let maxTotal = currentQuestions.length;
-            // Sistem Penilaian Persentase & Limiter max 100
             let finalScore = Math.min(100, Math.round((correctAnswers / maxTotal) * 100));
 
-            // Simpan ke LocalStorage spesifik kode soal
+            // Simpan ke LocalStorage spesifik kode soal (Untuk UI halaman awal Kuis ini)
             let historyData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
             let now = new Date();
             let timestamp = now.toLocaleDateString('id-ID') + " " + now.toLocaleTimeString('id-ID');
@@ -666,13 +652,25 @@
             historyData.push(record);
             localStorage.setItem(STORAGE_KEY, JSON.stringify(historyData));
 
-            // Komunikasi dengan rekap.html via LocalStorage (Bisa dibaca di rekap.html)
-            // Atau via postMessage jika di-iframe
+            // --- INTEGRASI KE REKAP.HTML ---
+            // Simpan ke array global "dataKuis" sesuai format yang ditangkap rekap.html
+            let globalDataKuis = JSON.parse(localStorage.getItem('dataKuis')) || [];
+            let recordGlobal = {
+                nama: studentName,
+                kelas: studentClass,
+                mapel: "MTK-STS-K4-S2-HOTS", 
+                nilai: finalScore,
+                waktu: timestamp
+            };
+            globalDataKuis.push(recordGlobal);
+            localStorage.setItem('dataKuis', JSON.stringify(globalDataKuis));
+            // -------------------------------
+
             if(window.parent !== window) {
-                window.parent.postMessage({ type: "QUIZ_RESULT", data: record }, "*");
+                // Post Message diperbarui mengikuti record Global
+                window.parent.postMessage({ type: "QUIZ_RESULT", data: recordGlobal }, "*");
             }
 
-            // Tampilkan layar hasil
             document.getElementById("quizScreen").style.display = "none";
             document.getElementById("resultScreen").style.display = "block";
             document.getElementById("resultName").innerText = studentName;

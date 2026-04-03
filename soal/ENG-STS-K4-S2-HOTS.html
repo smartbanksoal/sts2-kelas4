@@ -661,17 +661,29 @@
             }
         }
 
+        // --- FUNGSI sendToRekap YANG SUDAH DIPERBAIKI ---
         function sendToRekap(finalScore) {
-            const data = {
-                type: 'SMARTBANKSOAL_UPDATE',
-                kode: KODE_SOAL,
+            // Mengambil data rekap yang sudah ada di localStorage, atau membuat array baru jika kosong
+            let dataRekap = JSON.parse(localStorage.getItem('dataKuis')) || [];
+            
+            // Membuat objek data baru sesuai format yang dibaca oleh rekap.html
+            const newData = {
                 nama: currentUser.name,
                 kelas: currentUser.class,
-                skor: finalScore,
+                mapel: KODE_SOAL, 
+                nilai: finalScore, 
                 waktu: currentUser.date
             };
-            window.parent.postMessage(data, '*');
-            localStorage.setItem('rekap_last_entry', JSON.stringify(data));
+            
+            // Memasukkan data baru ke array dan menyimpannya kembali ke localStorage
+            dataRekap.push(newData);
+            localStorage.setItem('dataKuis', JSON.stringify(dataRekap));
+
+            // (Opsional) Tetap mempertahankan postMessage jika dibutuhkan saat file kuis di-embed dalam iframe
+            window.parent.postMessage({
+                type: 'SMARTBANKSOAL_UPDATE',
+                ...newData
+            }, '*');
         }
     </script>
 </body>

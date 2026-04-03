@@ -199,7 +199,7 @@
                         </tr>
                     </thead>
                     <tbody id="historyBody">
-                        </tbody>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -219,7 +219,7 @@
             <div id="question-text" class="question-text">Teks soal akan muncul di sini.</div>
             
             <div class="options-grid" id="options-container">
-                </div>
+            </div>
 
             <div id="explanation-box">
                 <strong>Pembahasan:</strong> <span id="explanation-text"></span>
@@ -233,7 +233,7 @@
     </div>
 
     <footer>
-        &copy; <span id="currentYear"></span> Oleh: Dwi Endrasto | Oleh: Dwi Endrasto | Dibuat dengan ❤️ untuk generasi cerdas bangsa<br>
+        &copy; <span id="currentYear"></span> Oleh: Dwi Endrasto | Dibuat dengan ❤️ untuk generasi cerdas bangsa<br>
     </footer>
 
     <script>
@@ -542,7 +542,7 @@
             }
         }
 
-        // Tampilkan Riwayat (Tanpa Dihapus/Dibatasi)
+        // Tampilkan Riwayat Lokal
         function loadHistory() {
             const history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
             const tbody = document.getElementById('historyBody');
@@ -574,7 +574,6 @@
                 return;
             }
 
-            // Aturan 3: Reset Variabel Secara Menyeluruh
             userInfo = { name: nameInput, class: classInput };
             score = 0;
             currentQuestionIndex = 0;
@@ -586,13 +585,12 @@
             shuffleArray(questions);
             questions.forEach(q => shuffleArray(q.options));
             
-            // Aturan 1: Set Flagging Kosong
             userAnswers = new Array(questions.length).fill(null);
             
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('quiz-screen').style.display = 'block';
             
-            updateScoreDisplay(); // Render 0 di awal
+            updateScoreDisplay();
             showQuestion();
         }
 
@@ -600,7 +598,6 @@
         function updateScoreDisplay() {
             let correctAnswers = 0;
             
-            // Cek array flagging untuk total jawaban benar
             questions.forEach((q, index) => {
                 if (userAnswers[index] !== null) {
                     if (q.options[userAnswers[index]].correct) {
@@ -609,10 +606,7 @@
                 }
             });
 
-            // Aturan 4: Perhitungan Berbasis Persentase
             let calculatedScore = (correctAnswers / questions.length) * 100;
-            
-            // Aturan 2: Penggunaan Fungsi Pembatas (limiter)
             score = Math.min(Math.round(calculatedScore), 100);
             
             document.getElementById('display-score').innerText = `Skor Sementara: ${score}`;
@@ -643,13 +637,12 @@
                 btn.className = 'option-btn';
                 btn.innerText = `${String.fromCharCode(65 + index)}. ${opt.text}`;
                 
-                // Jika sudah pernah dijawab (Cek dari Flag)
+                // Jika sudah pernah dijawab
                 if (userAnswers[currentQuestionIndex] !== null) {
                     btn.disabled = true;
                     if (userAnswers[currentQuestionIndex] === index) {
                         btn.classList.add(opt.correct ? 'correct' : 'wrong');
                     }
-                    // Tampilkan mana yang benar jika user salah jawab
                     if (opt.correct && userAnswers[currentQuestionIndex] !== index) {
                          btn.style.border = "2px solid #28a745";
                          btn.style.color = "#28a745";
@@ -683,16 +676,11 @@
         }
 
         function selectAnswer(selectedIndex) {
-            // Cegah klik ganda
             if (userAnswers[currentQuestionIndex] !== null) return;
             
-            // Simpan indeks pilihan pengguna ke array Flag
             userAnswers[currentQuestionIndex] = selectedIndex;
-            
-            // Update kalkulasi dinamis
             updateScoreDisplay();
-
-            showQuestion(); // Refresh tampilan untuk memunculkan warna dan pembahasan
+            showQuestion(); 
         }
 
         function nextQuestion() {
@@ -712,34 +700,43 @@
         }
 
         function finishQuiz() {
-            updateScoreDisplay(); // Final kalkulasi
+            updateScoreDisplay(); 
 
             const sessionData = {
                 name: userInfo.name,
                 class: userInfo.class,
                 score: score,
-                quiz_id: QUIZ_ID, // Identitas khusus
+                quiz_id: QUIZ_ID, 
                 time: new Date().toLocaleString('id-ID')
             };
 
             // Simpan ke riwayat lokal halaman ini
             const history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-            history.unshift(sessionData); // Unshift untuk memasukkan data ke paling atas
+            history.unshift(sessionData); 
             localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
 
             // ==========================================
             // KOMUNIKASI DENGAN FILE rekap.html 
             // ==========================================
             
-            // Metode 1: Global LocalStorage
-            let sharedRekap = JSON.parse(localStorage.getItem("global_rekap_skor")) || [];
-            sharedRekap.unshift(sessionData);
-            localStorage.setItem("global_rekap_skor", JSON.stringify(sharedRekap));
+            // Format data diubah agar sesuai dengan ekspektasi rekap.html
+            const dataUntukRekap = {
+                nama: userInfo.name,
+                kelas: userInfo.class,
+                mapel: "PAI Kelas 4 - STS",
+                nilai: score,
+                waktu: sessionData.time
+            };
 
-            // Metode 2: postMessage (Jika iframe)
+            // Simpan ke localStorage dengan Key yang dicari oleh rekap.html
+            let sharedRekap = JSON.parse(localStorage.getItem("dataKuis")) || [];
+            sharedRekap.push(dataUntukRekap);
+            localStorage.setItem("dataKuis", JSON.stringify(sharedRekap));
+
+            // Metode postMessage (tetap dibiarkan jika dipanggil lewat iframe)
             const messagePayload = {
                 type: 'QUIZ_SUBMITTED',
-                payload: sessionData
+                payload: dataUntukRekap
             };
             if (window.opener) {
                 window.opener.postMessage(messagePayload, '*');

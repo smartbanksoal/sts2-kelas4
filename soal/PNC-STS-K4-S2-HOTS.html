@@ -659,13 +659,22 @@
             let finalScore = Math.round((score / questions.length) * 100);
             studentData.score = finalScore;
             
+            // Simpan riwayat khusus di halaman kuis ini
             let history = JSON.parse(localStorage.getItem(KEY_HISTORY)) || [];
             history.unshift(studentData);
             localStorage.setItem(KEY_HISTORY, JSON.stringify(history));
 
-            let rekapData = JSON.parse(localStorage.getItem('SmartBankSoal_Rekap')) || [];
-            rekapData.push({ ...studentData, kode: "PNC-STS-K4-S2-HOTS" });
-            localStorage.setItem('SmartBankSoal_Rekap', JSON.stringify(rekapData));
+            // KOMUNIKASI DENGAN REKAP.HTML
+            // Menyesuaikan dengan key 'dataKuis' dan struktur object di file rekap.html
+            let rekapData = JSON.parse(localStorage.getItem('dataKuis')) || [];
+            rekapData.push({
+                nama: studentData.name,
+                kelas: studentData.kelas,
+                mapel: "PNC-STS-K4-S2-HOTS", 
+                nilai: finalScore,
+                waktu: studentData.time
+            });
+            localStorage.setItem('dataKuis', JSON.stringify(rekapData));
 
             alert(`Kuis Selesai!\nNama: ${studentData.name}\nSkor Akhir: ${finalScore}`);
             

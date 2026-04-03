@@ -379,13 +379,13 @@
                 return;
             }
 
-            // Aturan 3: Reset Variabel Secara Menyeluruh
+            // Reset Variabel Secara Menyeluruh
             user.name = nama;
             user.class = kelas;
             score = 0;
             currentQuestionIndex = 0;
             
-            // Aturan 1: Sistem Flagging disiapkan dengan array kosong bernilai null
+            // Sistem Flagging disiapkan dengan array kosong bernilai null
             answeredQuestions = new Array(questions.length).fill(null); 
             
             // Acak soal
@@ -406,10 +406,10 @@
             // Hitung jawaban benar (terfilter otomatis oleh sistem flagging array)
             let correctAnswers = answeredQuestions.filter(ans => ans && ans.isCorrect).length;
             
-            // Aturan 4: Perhitungan Berbasis Persentase
+            // Perhitungan Berbasis Persentase
             let calculatedScore = (correctAnswers / currentQuestions.length) * 100;
             
-            // Aturan 2: Penggunaan Fungsi Pembatas (limiter) agar tidak lebih dari 100
+            // Penggunaan Fungsi Pembatas (limiter) agar tidak lebih dari 100
             score = Math.min(Math.round(calculatedScore), 100); 
 
             document.getElementById('live-score').textContent = `Skor Sementara: ${score}`;
@@ -528,15 +528,15 @@
         function finishQuiz() {
             updateScoreDisplay();
             
+            // Simpan ke local storage internal halaman ini untuk riwayat pengerjaan lokal
             const sessionData = {
                 name: user.name,
                 class: user.class,
                 score: score,
-                quiz_id: QUIZ_ID, // Tag identitas penting untuk direkap
+                quiz_id: QUIZ_ID, 
                 time: new Date().toLocaleString('id-ID')
             };
 
-            // Simpan ke local storage internal halaman ini (tanpa batas pemotongan array agar histori aman)
             const history = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
             history.unshift(sessionData);
             localStorage.setItem(STORAGE_KEY, JSON.stringify(history)); 
@@ -545,21 +545,19 @@
             // KOMUNIKASI DENGAN FILE rekap.html 
             // ==========================================
             
-            // Metode 1: Simpan ke Global LocalStorage (Dapat diakses oleh file HTML lain di domain yang sama)
-            let sharedRekap = JSON.parse(localStorage.getItem("global_rekap_skor")) || [];
-            sharedRekap.unshift(sessionData);
-            localStorage.setItem("global_rekap_skor", JSON.stringify(sharedRekap));
-
-            // Metode 2: Menggunakan postMessage jika file ini dibuka di dalam iframe oleh rekap.html
-            const messagePayload = {
-                type: 'QUIZ_SUBMITTED',
-                payload: sessionData
+            // Format objek Disesuaikan dengan file rekap.html
+            const rekapData = {
+                nama: user.name,
+                kelas: user.class,
+                mapel: QUIZ_ID, // Menambahkan ID kuis sebagai mapel
+                nilai: score,
+                waktu: new Date().toLocaleString('id-ID')
             };
-            if (window.opener) {
-                window.opener.postMessage(messagePayload, '*');
-            } else if (window.parent !== window) {
-                window.parent.postMessage(messagePayload, '*');
-            }
+
+            // Menggunakan Key "dataKuis" sesuai dengan file rekap.html
+            let sharedRekap = JSON.parse(localStorage.getItem("dataKuis")) || [];
+            sharedRekap.unshift(rekapData);
+            localStorage.setItem("dataKuis", JSON.stringify(sharedRekap));
 
             alert(`Kuis Selesai!\nNama: ${user.name}\nKelas: ${user.class}\nSkor Akhir: ${score}`);
             
