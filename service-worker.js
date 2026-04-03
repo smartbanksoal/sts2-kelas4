@@ -1,5 +1,5 @@
 // Nama cache versi
-const CACHE_NAME = 'sts-kelas-4-v2';
+const CACHE_NAME = 'sts-kelas-4-v3';
 
 const urlsToCache = [
  './index.html',
