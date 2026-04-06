@@ -20,11 +20,10 @@
       text-align: center;
     }
     
-    /* --- CSS BARU UNTUK FORM TOKEN --- */
     .token-container {
         background: white; padding: 30px; border-radius: 15px;
         box-shadow: 0 8px 20px rgba(0,0,0,0.1); width: 85%; max-width: 350px;
-        margin-bottom: 20px; display: none; /* Disembunyikan secara default */
+        margin-bottom: 20px; display: none; 
     }
     .token-container h3 { color: #2c3e50; margin-top: 0; margin-bottom: 10px; }
     .token-container p { color: #7f8c8d; font-size: 14px; margin-bottom: 20px; }
@@ -41,7 +40,6 @@
     .btn-validasi:hover { background: #2980b9; }
     .btn-validasi:disabled { background: #95a5a6; cursor: not-allowed; }
     .status-token { margin-top: 15px; font-weight: bold; font-size: 14px; }
-    /* --------------------------------- */
 
     .btn-instal { 
       display: none; 
@@ -110,7 +108,6 @@
 
   <div class="pesan-tunggu" id="pesan">⏳ Menyiapkan aplikasi...</div>
 
-  <!-- CONTAINER TOKEN -->
   <div class="token-container" id="token-container">
       <h3>Aktivasi SmartBankSoal</h3>
       <p>Masukkan token lisensi Anda untuk menginstal aplikasi ini.</p>
@@ -119,7 +116,6 @@
       <div id="statusToken" class="status-token"></div>
   </div>
   
-  <!-- TOMBOL INSTAL & PROGRESS (BAWAAN) -->
   <button class="btn-instal" id="tombol-instal">📥 Instal Aplikasi Sekarang</button>
 
   <div class="pesan-tunggu" id="status-instalasi" style="display: none;">Memasang aplikasi, mohon tunggu...</div>
@@ -133,12 +129,10 @@
   </div>
 
   <script>
-    // 1. Cek apakah pengguna sudah membuka dari aplikasi yang terinstal (Home Screen)
     if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
         window.location.href = 'index.html'; 
     }
 
-    // 2. Mendaftarkan Service Worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./service-worker.js');
     }
@@ -151,18 +145,16 @@
     const statusInstalasi = document.getElementById('status-instalasi');
     const pesanSukses = document.getElementById('pesan-sukses');
     
-    // Elemen Token
     const tokenContainer = document.getElementById('token-container');
     const btnValidasi = document.getElementById('btnValidasi');
     const statusToken = document.getElementById('statusToken');
     const inputToken = document.getElementById('inputToken');
 
-    const isActivated = localStorage.getItem('sbs_active_status') === 'true';
+    // PERBAIKAN 1: Mengecek nama gembok yang benar
+    const isActivated = localStorage.getItem('sbs_active_status_STS-K4-S2-HOTS') === 'true';
 
-    // 3. Set waktu tunggu maksimal. 
     let fallbackTimeout;
     if (isActivated) {
-        // Jika sudah aktif, jalankan hitung mundur normal ke index.html
         fallbackTimeout = setTimeout(() => {
             pesanTunggu.innerText = 'Aplikasi sudah siap. Mengarahkan ke kuis...';
             setTimeout(() => {
@@ -170,12 +162,10 @@
             }, 1000);
         }, 3000);
     } else {
-        // Jika belum aktif, hentikan hitung mundur dan tampilkan form token
         pesanTunggu.style.display = 'none';
         tokenContainer.style.display = 'block';
     }
 
-    // 4. Proses Validasi Token
     btnValidasi.addEventListener('click', async () => {
         const tokenValue = inputToken.value.trim();
 
@@ -189,31 +179,30 @@
         btnValidasi.innerText = "Memvalidasi...";
         statusToken.innerHTML = "";
 
-        let deviceId = localStorage.getItem('sbs_device_id');
+        // PERBAIKAN 2: Mengubah nama device ID agar spesifik
+        let deviceId = localStorage.getItem('sbs_device_id_STS-K4-S2-HOTS');
         if (!deviceId) {
             deviceId = 'SBS-DEV-' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('sbs_device_id', deviceId);
+            localStorage.setItem('sbs_device_id_STS-K4-S2-HOTS', deviceId);
         }
 
-        // --- GANTI URL DI BAWAH INI DENGAN URL APPS SCRIPT ANDA ---
-        const scriptUrl = "https://script.google.com/macros/s/AKfycbwLsF0UAVjdUCwx8DOBXeP0cjSrzvlHEo0qoXm5AxD8nkBWtlu88ZBxY4HxurEroB-f8w/exec"; 
+        const scriptUrl = "https://script.google.com/macros/s/AKfycbywKNk7bvnOVlTuH_r-cU5xHiDxqMP1vRuU-eY6Z9ayJ4-HvI8Y9gmAvoKifBtJ7_ycIg/exec"; 
 
         try {
-            const response = await fetch(`${scriptUrl}?token=${tokenValue}&deviceId=${deviceId}`);
+            // PERBAIKAN 3: Menambahkan parameter ?kelas=STS-K4-S2-HOTS di dalam fetch
+            const response = await fetch(`${scriptUrl}?kelas=STS-K4-S2-HOTS&token=${tokenValue}&deviceId=${deviceId}`);
             const result = await response.text();
 
             if (result === "ACTIVATED" || result === "SUCCESS") {
-                localStorage.setItem('sbs_active_status', 'true');
+                localStorage.setItem('sbs_active_status_STS-K4-S2-HOTS', 'true');
                 statusToken.innerHTML = "Aktivasi Berhasil!";
                 statusToken.style.color = "#2ecc71";
                 
-                // Sembunyikan form token dan munculkan tombol instal jika HP mendukung
                 setTimeout(() => {
                     tokenContainer.style.display = 'none';
                     if (promptInstalasi) {
                         tombolInstal.style.display = 'block';
                     } else {
-                        // Jika HP tidak memunculkan prompt instalasi, langsung ke aplikasi
                         pesanTunggu.style.display = 'block';
                         pesanTunggu.innerText = 'Mengarahkan ke aplikasi...';
                         setTimeout(() => { window.location.href = 'index.html'; }, 1000);
@@ -236,20 +225,18 @@
         }
     });
 
-    // 5. Menangkap event instalasi dari HP
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       promptInstalasi = e;
       
-      // Jika sudah teraktivasi sebelumnya, langsung munculkan tombol instal
-      if (localStorage.getItem('sbs_active_status') === 'true') {
+      // Mengecek ulang menggunakan gembok yang spesifik
+      if (localStorage.getItem('sbs_active_status_STS-K4-S2-HOTS') === 'true') {
           clearTimeout(fallbackTimeout);
           pesanTunggu.style.display = 'none'; 
           tombolInstal.style.display = 'block'; 
       }
     });
 
-    // 6. Logika Tombol Instal (Bawaan)
     tombolInstal.addEventListener('click', async () => {
       if (promptInstalasi) {
         promptInstalasi.prompt(); 
